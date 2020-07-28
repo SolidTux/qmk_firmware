@@ -114,6 +114,13 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 };
 
+const uint8_t PROGMEM image_buffer[48] = {
+    0,0,0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,0,0
+};
+
 layer_state_t layer_state_set_user(layer_state_t state) {
   return update_tri_layer_state(state, _LOWER, _RAISE, _ADJUST);
 }
@@ -146,6 +153,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       break;
     case IMAGE:
       if (record->event.pressed) {
+          rgb_matrix_config.mode = RGB_MATRIX_CUSTOM_image;
       }
       return false;
     case COLOR:
