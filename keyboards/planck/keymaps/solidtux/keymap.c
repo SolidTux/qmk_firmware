@@ -293,6 +293,7 @@ bool music_mask_user(uint16_t keycode) {
 typedef enum {
     CMD_RGB_MODE,
     CMD_COLOR,
+    CMD_PIXEL,
     CMD_LAST
 } cmd_t;
 
@@ -309,6 +310,10 @@ void raw_hid_receive(uint8_t *data, uint8_t length) {
         case CMD_COLOR:
             rgb_matrix_config.mode = RGB_MATRIX_EFFECT_MAX;
             rgb_matrix_set_color_all(data[1], data[2], data[3]);
+            break;
+        case CMD_PIXEL:
+            rgb_matrix_config.mode = RGB_MATRIX_EFFECT_MAX;
+            rgb_matrix_set_color(data[1], data[2], data[3], data[4]);
             break;
         default:
             break;
