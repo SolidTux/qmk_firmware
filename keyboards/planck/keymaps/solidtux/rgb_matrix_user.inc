@@ -32,8 +32,6 @@ void process_rgb_matrix_typing_alphamap(keyrecord_t* record) {
     g_rgb_frame_buffer[row][col] = qadd8(g_rgb_frame_buffer[row][col], 32);
 }
 
-uint8_t alpha_counter;
-
 bool alphamap(effect_params_t* params) {
     // Modified version of RGB_MATRIX_USE_LIMITS to work off of matrix row / col size
     uint8_t led_min = RGB_MATRIX_LED_PROCESS_LIMIT * params->iter;
@@ -65,12 +63,8 @@ bool alphamap(effect_params_t* params) {
             rgb_matrix_set_color(led[j], rgb.r, rgb.g, rgb.b);
         }
 
-        if (alpha_counter % 4 == 0) {
-            g_rgb_frame_buffer[row][col] = qsub8(val, 1);
-        }
+        g_rgb_frame_buffer[row][col] = qsub8(val, 1);
     }
-
-    alpha_counter++;
 
     return led_max < sizeof(g_rgb_frame_buffer);
 }
