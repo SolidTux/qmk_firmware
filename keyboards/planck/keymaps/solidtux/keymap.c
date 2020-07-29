@@ -291,20 +291,24 @@ bool music_mask_user(uint16_t keycode) {
 }
 
 typedef enum {
-    RGB_MODE,
+    CMD_RGB_MODE,
+    CMD_COLOR,
     CMD_LAST
 } cmd_t;
 
 void raw_hid_receive(uint8_t *data, uint8_t length) {
-    // TODO fix range check
+    // TODO range checks everywhere
     if (length < 10) {
         return;
     }
     cmd_t cmd = (cmd_t) data[0];
     switch (cmd) {
-        case RGB_MODE:
-            // TODO range check
+        case CMD_RGB_MODE:
             rgb_matrix_config.mode = data[1];
+            break;
+        case CMD_COLOR:
+            rgb_matrix_config.mode = RGB_MATRIX_EFFECT_MAX;
+            rgb_matrix_set_color_all(data[1], data[2], data[3]);
             break;
         default:
             break;
