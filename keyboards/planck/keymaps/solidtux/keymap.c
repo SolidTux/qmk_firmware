@@ -28,7 +28,9 @@ enum planck_keycodes {
   QWERTY = SAFE_RANGE,
   BACKLIT,
   COLOR,
+  HEATMAP,
   IMAGE,
+  RGBANIM,
   LED_LEV
 };
 
@@ -107,8 +109,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * `-----------------------------------------------------------------------------------'
  */
 [_ADJUST] = LAYOUT_planck_grid(
-    _______, _______, MUV_IN,  MUV_DE,  _______, _______, _______, LED_LEV, _______, _______, _______, _______,
-    KC_WFAV, _______, MI_ON,   MI_OFF,  _______, COLOR,   IMAGE,   RGB_TOG, RGB_VAI, RGB_VAD, _______, RESET,
+    _______, _______, MUV_IN,  MUV_DE,  _______, RGBANIM, IMAGE,   LED_LEV, _______, _______, _______, _______,
+    KC_WFAV, _______, MI_ON,   MI_OFF,  _______, COLOR,   HEATMAP, RGB_TOG, RGB_VAI, RGB_VAD, _______, RESET,
     _______, _______, MU_ON,   MU_OFF,  MU_MOD,  _______, _______, RGB_MOD, RGB_HUI, RGB_HUD, _______, _______,
     _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______
 )
@@ -175,7 +177,17 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
           rgb_matrix_config.mode = RGB_MATRIX_CUSTOM_image;
       }
       return false;
+    case RGBANIM:
+      if (record->event.pressed) {
+          rgb_matrix_config.mode = RGB_MATRIX_RAINBOW_MOVING_CHEVRON;
+      }
+      return false;
     case COLOR:
+      if (record->event.pressed) {
+          rgb_matrix_config.mode = RGB_MATRIX_ALPHAS_MODS;
+      }
+      return false;
+    case HEATMAP:
       if (record->event.pressed) {
           eeconfig_update_rgb_matrix_default();
       }
