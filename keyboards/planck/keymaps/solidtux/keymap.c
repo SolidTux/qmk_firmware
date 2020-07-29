@@ -16,6 +16,7 @@
 
 #include QMK_KEYBOARD_H
 #include "muse.h"
+#include <raw_hid.h>
 
 enum planck_layers {
   _QWERTY,
@@ -115,13 +116,6 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______
 )
 
-};
-
-const uint8_t PROGMEM image_buffer[48] = {
-    0,0,0,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,0,0,0
 };
 
 layer_state_t layer_state_set_user(layer_state_t state) {
@@ -294,4 +288,25 @@ bool music_mask_user(uint16_t keycode) {
     default:
       return true;
   }
+}
+
+typedef enum {
+    RGB_MODE,
+    CMD_LAST
+} cmd_t;
+
+void raw_hid_receive(uint8_t *data, uint8_t length) {
+    // TODO fix range check
+    if (length < 10) {
+        return;
+    }
+    cmd_t cmd = (cmd_t) data[0];
+    switch (cmd) {
+        case RGB_MODE:
+            // TODO range check
+            rgb_matrix_config.mode = data[1];
+            break;
+        default:
+            break;
+    }
 }
