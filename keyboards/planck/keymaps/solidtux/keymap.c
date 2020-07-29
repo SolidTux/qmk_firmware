@@ -28,7 +28,8 @@ enum planck_keycodes {
   QWERTY = SAFE_RANGE,
   BACKLIT,
   COLOR,
-  IMAGE
+  IMAGE,
+  LED_LEV
 };
 
 #define LOWER MO(_LOWER)
@@ -106,7 +107,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * `-----------------------------------------------------------------------------------'
  */
 [_ADJUST] = LAYOUT_planck_grid(
-    _______, _______, MUV_IN,  MUV_DE,  _______, _______, _______, _______, _______, _______, _______, _______,
+    _______, _______, MUV_IN,  MUV_DE,  _______, _______, _______, LED_LEV, _______, _______, _______, _______,
     _______, _______, MI_ON,   MI_OFF,  _______, COLOR,   IMAGE,   RGB_TOG, RGB_VAI, RGB_VAD, _______, RESET,
     _______, _______, MU_ON,   MU_OFF,  MU_MOD,  _______, _______, RGB_MOD, RGB_HUI, RGB_HUD, _______, _______,
     _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______
@@ -122,7 +123,25 @@ const uint8_t PROGMEM image_buffer[48] = {
 };
 
 layer_state_t layer_state_set_user(layer_state_t state) {
-  return update_tri_layer_state(state, _LOWER, _RAISE, _ADJUST);
+    planck_ez_left_led_off();
+    planck_ez_right_led_off();
+    state = update_tri_layer_state(state, _LOWER, _RAISE, _ADJUST);
+    uint8_t layer = biton32(state);
+    switch (layer) {
+        case 1:
+            planck_ez_left_led_on();
+            break;
+        case 2:
+            planck_ez_right_led_on();
+            break;
+        case 3:
+            planck_ez_right_led_on();
+            planck_ez_left_led_on();
+            break;
+        default:
+            break;
+    }
+    return state;
 }
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
@@ -161,6 +180,18 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
           eeconfig_update_rgb_matrix_default();
       }
       return false;
+    case LED_LEV:
+        if (record->event.pressed) {
+             keyboard_config.led_level++;
+             if (keyboard_config.led_level > 4) {
+                keyboard_config.led_level = 0;
+             }
+             planck_ez_right_led_level((uint8_t)keyboard_config.led_level * 255 / 4 );
+             planck_ez_left_led_level((uint8_t)keyboard_config.led_level * 255 / 4 );
+             eeconfig_update_kb(keyboard_config.raw);
+             layer_state_set_kb(layer_state);
+        }
+        return false;
   }
   return true;
 }
