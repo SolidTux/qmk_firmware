@@ -1,4 +1,5 @@
 RGB_MATRIX_CUSTOM_USER = yes
-RAW_ENABLE = yes
+VIRTSER_ENABLE = yes
+NO_USB_STARTUP_CHECK = yes
 
 SRC += muse.c

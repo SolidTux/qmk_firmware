@@ -16,7 +16,7 @@
 
 #include QMK_KEYBOARD_H
 #include "muse.h"
-#include <raw_hid.h>
+#include <virtser.h>
 
 enum planck_layers {
   _QWERTY,
@@ -238,6 +238,11 @@ bool music_mask_user(uint16_t keycode) {
   }
 }
 
+void suspend_power_down_user(void) {
+  planck_ez_left_led_off();
+  planck_ez_right_led_off();
+}
+
 typedef enum {
     CMD_RGB_MODE,
     CMD_COLOR,
@@ -245,25 +250,35 @@ typedef enum {
     CMD_LAST
 } cmd_t;
 
-void raw_hid_receive(uint8_t *data, uint8_t length) {
-    // TODO range checks everywhere
-    if (length < 10) {
-        return;
+uint8_t ser_buffer[256];
+uint8_t ser_counter = 0;
+uint8_t ser_length = 0;
+
+void virtser_recv(uint8_t c) {
+    if (ser_counter == 0) {
+        ser_length = c;
+    } else {
+        ser_buffer[ser_counter - 1] = c;
     }
-    cmd_t cmd = (cmd_t) data[0];
-    switch (cmd) {
-        case CMD_RGB_MODE:
-            rgb_matrix_config.mode = data[1];
-            break;
-        case CMD_COLOR:
-            rgb_matrix_config.mode = RGB_MATRIX_EFFECT_MAX;
-            rgb_matrix_set_color_all(data[1], data[2], data[3]);
-            break;
-        case CMD_PIXEL:
-            rgb_matrix_config.mode = RGB_MATRIX_EFFECT_MAX;
-            rgb_matrix_set_color(data[1], data[2], data[3], data[4]);
-            break;
-        default:
-            break;
+    if (ser_counter == ser_length) {
+        cmd_t cmd = (cmd_t) ser_buffer[0];
+        switch (cmd) {
+            case CMD_RGB_MODE:
+                rgb_matrix_config.mode = ser_buffer[1];
+                break;
+            case CMD_COLOR:
+                rgb_matrix_config.mode = RGB_MATRIX_EFFECT_MAX;
+                rgb_matrix_set_color_all(ser_buffer[1], ser_buffer[2], ser_buffer[3]);
+                break;
+            case CMD_PIXEL:
+                rgb_matrix_config.mode = RGB_MATRIX_EFFECT_MAX;
+                rgb_matrix_set_color(ser_buffer[1], ser_buffer[2], ser_buffer[3], ser_buffer[4]);
+                break;
+            default:
+                break;
+        }
+        ser_counter = 0;
+    } else {
+        ser_counter++;
     }
 }
