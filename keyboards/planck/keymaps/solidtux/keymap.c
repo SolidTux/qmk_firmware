@@ -32,7 +32,8 @@ enum planck_keycodes {
   HEATMAP,
   IMAGE,
   RGBANIM,
-  LED_LEV
+  LED_LEV,
+  SCREENS
 };
 
 #define LOWER MO(_LOWER)
@@ -62,14 +63,14 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     _______, _______, _______, _______, _______, _______, _______, _______, KC_MNXT, KC_VOLD, KC_VOLU, KC_MPLY
 ),
 [_ADJUST] = LAYOUT_planck_grid(
-    _______, _______, MUV_IN,  MUV_DE,  _______, RGBANIM, IMAGE,   LED_LEV, _______, _______, _______, _______,
+    SCREENS, _______, AU_ON,   AU_OFF,  _______, RGBANIM, IMAGE,   LED_LEV, _______, _______, _______, _______,
     KC_WFAV, _______, MI_ON,   MI_OFF,  _______, COLOR,   HEATMAP, RGB_TOG, RGB_VAI, RGB_VAD, _______, RESET,
     KC_CAPS, _______, MU_ON,   MU_OFF,  MU_MOD,  _______, _______, RGB_MOD, RGB_HUI, RGB_HUD, _______, _______,
     _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______
 ),
 [_NUMPAD] = LAYOUT_planck_grid(
-    _______, _______, _______, _______, _______, _______, _______, KC_KP_7, KC_KP_8, KC_KP_9, KC_PPLS, KC_NUMLOCK,
-    _______, _______, _______, _______, _______, _______, _______, KC_KP_4, KC_KP_5, KC_KP_6, KC_PMNS, _______,
+    _______, _______, _______, _______, _______, _______, _______, KC_KP_7, KC_KP_8, KC_KP_9, KC_PPLS, _______,
+    _______, _______, _______, _______, _______, _______, _______, KC_KP_4, KC_KP_5, KC_KP_6, KC_PMNS, KC_NUMLOCK,
     _______, _______, _______, _______, _______, _______, _______, KC_KP_1, KC_KP_2, KC_KP_3, KC_PAST, _______,
     _______, _______, _______, _______, _______, _______, _______, KC_KP_0, KC_PDOT, KC_PEQL, KC_PSLS, _______
 )
@@ -144,6 +145,14 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
              planck_ez_left_led_level((uint8_t)keyboard_config.led_level * 255 / 4 );
              eeconfig_update_kb(keyboard_config.raw);
              layer_state_set_kb(layer_state);
+        }
+        return false;
+    case SCREENS:
+        if (record->event.pressed) {
+            host_consumer_send(0x19E);
+        }
+        else {
+            host_consumer_send(0);
         }
         return false;
   }
