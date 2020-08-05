@@ -18,24 +18,9 @@
 #include "muse.h"
 #include <virtser.h>
 
-enum planck_layers {
-  _QWERTY,
-  _LOWER,
-  _RAISE,
-  _ADJUST,
-  _NUMPAD,
-  _MOUSE
-};
+enum planck_layers { _QWERTY, _LOWER, _RAISE, _ADJUST, _NUMPAD, _MOUSE };
 
-enum planck_keycodes {
-  QWERTY = SAFE_RANGE,
-  COLOR,
-  HEATMAP,
-  IMAGE,
-  RGBANIM,
-  LED_LEV,
-  SCREENS
-};
+enum planck_keycodes { QWERTY = SAFE_RANGE, COLOR, HEATMAP, IMAGE, RGBANIM, LED_LEV, SCREENS };
 
 #define LOWER MO(_LOWER)
 #define RAISE MO(_RAISE)
@@ -45,6 +30,7 @@ enum planck_keycodes {
 #define LSHIFT MT(MOD_LSFT, KC_BSLS)
 #define RSHIFT MT(MOD_RSFT, KC_ENT)
 
+// clang-format off
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 [_QWERTY] = LAYOUT_planck_grid(
     KC_TAB,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_BSPC,
@@ -83,15 +69,16 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     _______, _______, _______, _______, _______, _______, _______, _______, KC_MS_L, KC_MS_D, KC_MS_U, KC_MS_R
 )
 };
+// clang-format on
 
 uint8_t last_layer = 0;
-uint8_t last_mode = RGB_MATRIX_EFFECT_MAX;
+uint8_t last_mode  = RGB_MATRIX_EFFECT_MAX;
 
 layer_state_t layer_state_set_user(layer_state_t state) {
-    state = update_tri_layer_state(state, _LOWER, _RAISE, _ADJUST);
+    state         = update_tri_layer_state(state, _LOWER, _RAISE, _ADJUST);
     uint8_t layer = biton32(state);
     if (layer == _NUMPAD && last_layer != _NUMPAD) {
-        last_mode = rgb_matrix_get_mode();
+        last_mode              = rgb_matrix_get_mode();
         rgb_matrix_config.mode = RGB_MATRIX_CUSTOM_numpad;
     } else if (last_layer == _NUMPAD && layer != _NUMPAD) {
         rgb_matrix_config.mode = last_mode;
@@ -115,94 +102,93 @@ bool led_update_user(led_t led_state) {
 }
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-  switch (keycode) {
-    case QWERTY:
-      if (record->event.pressed) {
-        print("mode just switched to qwerty and this is a huge string\n");
-        set_single_persistent_default_layer(_QWERTY);
-      }
-      return false;
-      break;
-    case IMAGE:
-      if (record->event.pressed) {
-          rgb_matrix_config.mode = RGB_MATRIX_CUSTOM_image;
-      }
-      return false;
-    case RGBANIM:
-      if (record->event.pressed) {
-          rgb_matrix_config.mode = RGB_MATRIX_RAINBOW_MOVING_CHEVRON;
-      }
-      return false;
-    case COLOR:
-      if (record->event.pressed) {
-          rgb_matrix_config.mode = RGB_MATRIX_ALPHAS_MODS;
-      }
-      return false;
-    case HEATMAP:
-      if (record->event.pressed) {
-          eeconfig_update_rgb_matrix_default();
-      }
-      return false;
-    case LED_LEV:
-        if (record->event.pressed) {
-             keyboard_config.led_level++;
-             if (keyboard_config.led_level > 4) {
-                keyboard_config.led_level = 0;
-             }
-             planck_ez_right_led_level((uint8_t)keyboard_config.led_level * 255 / 4 );
-             planck_ez_left_led_level((uint8_t)keyboard_config.led_level * 255 / 4 );
-             eeconfig_update_kb(keyboard_config.raw);
-             layer_state_set_kb(layer_state);
-        }
-        return false;
-    case SCREENS:
-        if (record->event.pressed) {
-            host_consumer_send(0x19E);
-        }
-        else {
-            host_consumer_send(0);
-        }
-        return false;
-  }
-  return true;
+    switch (keycode) {
+        case QWERTY:
+            if (record->event.pressed) {
+                print("mode just switched to qwerty and this is a huge string\n");
+                set_single_persistent_default_layer(_QWERTY);
+            }
+            return false;
+            break;
+        case IMAGE:
+            if (record->event.pressed) {
+                rgb_matrix_config.mode = RGB_MATRIX_CUSTOM_image;
+            }
+            return false;
+        case RGBANIM:
+            if (record->event.pressed) {
+                rgb_matrix_config.mode = RGB_MATRIX_RAINBOW_MOVING_CHEVRON;
+            }
+            return false;
+        case COLOR:
+            if (record->event.pressed) {
+                rgb_matrix_config.mode = RGB_MATRIX_ALPHAS_MODS;
+            }
+            return false;
+        case HEATMAP:
+            if (record->event.pressed) {
+                eeconfig_update_rgb_matrix_default();
+            }
+            return false;
+        case LED_LEV:
+            if (record->event.pressed) {
+                keyboard_config.led_level++;
+                if (keyboard_config.led_level > 4) {
+                    keyboard_config.led_level = 0;
+                }
+                planck_ez_right_led_level((uint8_t)keyboard_config.led_level * 255 / 4);
+                planck_ez_left_led_level((uint8_t)keyboard_config.led_level * 255 / 4);
+                eeconfig_update_kb(keyboard_config.raw);
+                layer_state_set_kb(layer_state);
+            }
+            return false;
+        case SCREENS:
+            if (record->event.pressed) {
+                host_consumer_send(0x19E);
+            } else {
+                host_consumer_send(0);
+            }
+            return false;
+    }
+    return true;
 }
 
-bool muse_mode = false;
-uint8_t last_muse_note = 0;
-uint16_t muse_counter = 0;
-uint8_t muse_offset = 70;
-uint16_t muse_tempo = 50;
+bool     muse_mode      = false;
+uint8_t  last_muse_note = 0;
+uint16_t muse_counter   = 0;
+uint8_t  muse_offset    = 70;
+uint16_t muse_tempo     = 50;
 
 void encoder_update(bool clockwise) {
-  if (muse_mode) {
-    if (IS_LAYER_ON(_RAISE)) {
-      if (clockwise) {
-        muse_offset++;
-      } else {
-        muse_offset--;
-      }
+    if (muse_mode) {
+        if (IS_LAYER_ON(_RAISE)) {
+            if (clockwise) {
+                muse_offset++;
+            } else {
+                muse_offset--;
+            }
+        } else {
+            if (clockwise) {
+                muse_tempo += 1;
+            } else {
+                muse_tempo -= 1;
+            }
+        }
     } else {
-      if (clockwise) {
-        muse_tempo+=1;
-      } else {
-        muse_tempo-=1;
-      }
+        if (clockwise) {
+#ifdef MOUSEKEY_ENABLE
+            tap_code(KC_MS_WH_DOWN);
+#else
+            tap_code(KC_PGDN);
+#endif
+        } else {
+#ifdef MOUSEKEY_ENABLE
+            tap_code(KC_MS_WH_UP);
+#else
+            tap_code(KC_PGUP);
+#endif
+        }
     }
-  } else {
-    if (clockwise) {
-      #ifdef MOUSEKEY_ENABLE
-        tap_code(KC_MS_WH_DOWN);
-      #else
-        tap_code(KC_PGDN);
-      #endif
-    } else {
-      #ifdef MOUSEKEY_ENABLE
-        tap_code(KC_MS_WH_UP);
-      #else
-        tap_code(KC_PGUP);
-      #endif
-    }
-  }
 }
 
 void dip_switch_update_user(uint8_t index, bool active) {
@@ -246,30 +232,25 @@ void matrix_scan_user(void) {
 }
 
 bool music_mask_user(uint16_t keycode) {
-  switch (keycode) {
-    case RAISE:
-    case LOWER:
-      return false;
-    default:
-      return true;
-  }
+    switch (keycode) {
+        case RAISE:
+        case LOWER:
+            return false;
+        default:
+            return true;
+    }
 }
 
 void suspend_power_down_user(void) {
-  planck_ez_left_led_off();
-  planck_ez_right_led_off();
+    planck_ez_left_led_off();
+    planck_ez_right_led_off();
 }
 
-typedef enum {
-    CMD_RGB_MODE,
-    CMD_COLOR,
-    CMD_PIXEL,
-    CMD_LAST
-} cmd_t;
+typedef enum { CMD_RGB_MODE, CMD_COLOR, CMD_PIXEL, CMD_LAST } cmd_t;
 
 uint8_t ser_buffer[256];
 uint8_t ser_counter = 0;
-uint8_t ser_length = 0;
+uint8_t ser_length  = 0;
 
 void virtser_recv(uint8_t c) {
     if (ser_counter == 0) {
@@ -278,7 +259,7 @@ void virtser_recv(uint8_t c) {
         ser_buffer[ser_counter - 1] = c;
     }
     if (ser_counter == ser_length) {
-        cmd_t cmd = (cmd_t) ser_buffer[0];
+        cmd_t cmd = (cmd_t)ser_buffer[0];
         switch (cmd) {
             case CMD_RGB_MODE:
                 rgb_matrix_config.mode = ser_buffer[1];

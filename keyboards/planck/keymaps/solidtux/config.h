@@ -1,8 +1,8 @@
 #pragma once
 
 #ifdef AUDIO_ENABLE
-    #define STARTUP_SONG SONG(NO_SOUND)
-    #define GOODBYE_SONG SONG(NO_SOUND)
+#    define STARTUP_SONG SONG(NO_SOUND)
+#    define GOODBYE_SONG SONG(NO_SOUND)
 #endif
 
 //#define MIDI_BASIC

@@ -226,7 +226,7 @@ bool process_rgb_matrix(uint16_t keycode, keyrecord_t *record) {
     }
 #endif  // defined(RGB_MATRIX_FRAMEBUFFER_EFFECTS) && !defined(DISABLE_RGB_MATRIX_TYPING_HEATMAP)
     if (rgb_matrix_config.mode == RGB_MATRIX_CUSTOM_alphamap) {
-       process_rgb_matrix_typing_alphamap(record);
+        process_rgb_matrix_typing_alphamap(record);
     }
 
     return true;

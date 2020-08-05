@@ -4,6 +4,7 @@ RGB_MATRIX_EFFECT(alphamap)
 
 #ifdef RGB_MATRIX_CUSTOM_EFFECT_IMPLS
 
+// clang-format off
 const bool PROGMEM image_mask[47] = {
     0,0,1,1,0,0,0,1,0,1,0,0,
     0,0,1,0,1,0,0,1,1,1,0,0,
@@ -17,44 +18,45 @@ const bool PROGMEM numpad_mask[47] = {
     0,0,0,0,0,0,0,1,1,1,1,0,
     0,0,0,0,0,0,  1,1,1,1,0
 };
+// clang-format on
 
 static bool image(effect_params_t* params) {
-  RGB_MATRIX_USE_LIMITS(led_min, led_max);
-  if (led_max > 48) {
-      led_max = 48;
-  }
-  for (uint8_t i = led_min; i < led_max; i++) {
-    if (image_mask[i]) {
-      rgb_matrix_set_color(i, 0x00, 0xff, 0xff);
-    } else {
-      rgb_matrix_set_color(i, 0x00, 0x00, 0x00);
+    RGB_MATRIX_USE_LIMITS(led_min, led_max);
+    if (led_max > 48) {
+        led_max = 48;
     }
-  }
-  return led_max < DRIVER_LED_TOTAL;
+    for (uint8_t i = led_min; i < led_max; i++) {
+        if (image_mask[i]) {
+            rgb_matrix_set_color(i, 0x00, 0xff, 0xff);
+        } else {
+            rgb_matrix_set_color(i, 0x00, 0x00, 0x00);
+        }
+    }
+    return led_max < DRIVER_LED_TOTAL;
 }
 
 static bool numpad(effect_params_t* params) {
-  RGB_MATRIX_USE_LIMITS(led_min, led_max);
-  if (led_max > 48) {
-      led_max = 48;
-  }
-  for (uint8_t i = led_min; i < led_max; i++) {
-    HSV hsv = rgb_matrix_config.hsv;
-    if (numpad_mask[i]) {
-      hsv.h += rgb_matrix_config.speed/2;
+    RGB_MATRIX_USE_LIMITS(led_min, led_max);
+    if (led_max > 48) {
+        led_max = 48;
     }
-    if (HAS_FLAGS(g_led_config.flags[i], LED_FLAG_MODIFIER)) {
-      hsv.h += rgb_matrix_config.speed;
+    for (uint8_t i = led_min; i < led_max; i++) {
+        HSV hsv = rgb_matrix_config.hsv;
+        if (numpad_mask[i]) {
+            hsv.h += rgb_matrix_config.speed / 2;
+        }
+        if (HAS_FLAGS(g_led_config.flags[i], LED_FLAG_MODIFIER)) {
+            hsv.h += rgb_matrix_config.speed;
+        }
+        RGB rgb = hsv_to_rgb(hsv);
+        rgb_matrix_set_color(i, rgb.r, rgb.g, rgb.b);
     }
-    RGB rgb = hsv_to_rgb(hsv);
-    rgb_matrix_set_color(i, rgb.r, rgb.g, rgb.b);
-  }
-  return led_max < DRIVER_LED_TOTAL;
+    return led_max < DRIVER_LED_TOTAL;
 }
 
 void process_rgb_matrix_typing_alphamap(keyrecord_t* record) {
-    uint8_t row   = record->event.key.row;
-    uint8_t col   = record->event.key.col;
+    uint8_t row = record->event.key.row;
+    uint8_t col = record->event.key.col;
 
     g_rgb_frame_buffer[row][col] = qadd8(g_rgb_frame_buffer[row][col], 32);
 }
@@ -82,7 +84,7 @@ bool alphamap(effect_params_t* params) {
             if (!HAS_ANY_FLAGS(g_led_config.flags[led[j]], params->flags)) continue;
 
             HSV hsv = rgb_matrix_config.hsv;
-            hsv.s = qsub8(hsv.s, val);
+            hsv.s   = qsub8(hsv.s, val);
             if (HAS_FLAGS(g_led_config.flags[led[j]], LED_FLAG_MODIFIER)) {
                 hsv.h += rgb_matrix_config.speed;
             }
