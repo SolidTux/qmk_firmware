@@ -76,35 +76,72 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     NUMPAD,  KC_LCTL, KC_LALT, KC_LGUI, RAISE,   KC_SPC,  KC_SPC,  LOWER,   KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT
 )
 };
+
+bool PROGMEM numpad_mask[47] = {
+    0,0,0,0,0,0,0,1,1,1,1,0,
+    0,0,0,0,0,0,0,1,1,1,1,1,
+    0,0,0,0,0,0,0,1,1,1,1,0,
+    0,0,0,0,0,0,  1,1,1,1,0
+};
+
+bool PROGMEM game_mask[47] = {
+    0,0,1,0,0,0,0,0,0,0,0,0,
+    0,1,1,1,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,  0,0,0,0,0
+};
 // clang-format on
 
 uint8_t last_layer = 0;
 uint8_t last_mode  = RGB_MATRIX_EFFECT_MAX;
+uint8_t current_layer = 0;
+uint8_t default_layer = 0;
 
 layer_state_t layer_state_set_user(layer_state_t state) {
     state         = update_tri_layer_state(state, _LOWER, _RAISE, _ADJUST);
     uint8_t layer = biton32(state);
-    if (layer == _NUMPAD && last_layer != _NUMPAD) {
-        last_mode              = rgb_matrix_get_mode();
-        rgb_matrix_config.mode = RGB_MATRIX_CUSTOM_numpad;
-    } else if (last_layer == _NUMPAD && layer != _NUMPAD) {
-        rgb_matrix_config.mode = last_mode;
-    }
+    current_layer = layer;
     last_layer = layer;
     return state;
 }
 
 layer_state_t default_layer_state_set_user(layer_state_t state) {
     uint8_t layer = biton32(state);
+    default_layer = layer;
     switch (layer) {
         case _GAME:
-            last_mode = RGB_MATRIX_CUSTOM_game;
+            rgb_matrix_config.mode = RGB_MATRIX_SPLASH;
             break;
         case _QWERTY:
-            last_mode = RGB_MATRIX_STARTUP_MODE;
+            rgb_matrix_config.mode = RGB_MATRIX_STARTUP_MODE;
             break;
     }
     return state;
+}
+
+void rgb_matrix_indicators_kb(void) {
+    bool* mask = 0;
+    switch (default_layer) {
+        case _GAME:
+            mask = game_mask;
+            break;
+    }
+    switch (current_layer) {
+        case _NUMPAD:
+            mask = numpad_mask;
+            break;
+    }
+    if (mask == 0) {
+        return;
+    }
+    for (uint8_t i = 0; i < 47; i++) {
+        if (mask[i]) {
+            HSV hsv = rgb_matrix_config.hsv;
+            hsv.h += rgb_matrix_config.speed / 2;
+            RGB rgb = hsv_to_rgb(hsv);
+            rgb_matrix_set_color(i, rgb.r, rgb.g, rgb.b);
+        }
+    }
 }
 
 bool led_update_user(led_t led_state) {

@@ -1,6 +1,4 @@
 RGB_MATRIX_EFFECT(image)
-RGB_MATRIX_EFFECT(numpad)
-RGB_MATRIX_EFFECT(game)
 RGB_MATRIX_EFFECT(alphamap)
 
 #ifdef RGB_MATRIX_CUSTOM_EFFECT_IMPLS
@@ -10,20 +8,6 @@ const bool PROGMEM image_mask[47] = {
     0,0,1,1,0,0,0,1,0,1,0,0,
     0,0,1,0,1,0,0,1,1,1,0,0,
     0,0,1,1,0,0,0,1,0,1,0,0,
-    0,0,0,0,0,0,  0,0,0,0,0
-};
-
-const bool PROGMEM numpad_mask[47] = {
-    0,0,0,0,0,0,0,1,1,1,1,0,
-    0,0,0,0,0,0,0,1,1,1,1,1,
-    0,0,0,0,0,0,0,1,1,1,1,0,
-    0,0,0,0,0,0,  1,1,1,1,0
-};
-
-const bool PROGMEM game_mask[47] = {
-    0,0,1,0,0,0,0,0,0,0,0,0,
-    0,1,1,1,0,0,0,0,0,0,0,0,
-    0,0,0,0,0,0,0,0,0,0,0,0,
     0,0,0,0,0,0,  0,0,0,0,0
 };
 // clang-format on
@@ -39,44 +23,6 @@ static bool image(effect_params_t* params) {
         } else {
             rgb_matrix_set_color(i, 0x00, 0x00, 0x00);
         }
-    }
-    return led_max < DRIVER_LED_TOTAL;
-}
-
-static bool game(effect_params_t* params) {
-    bool super = SPLASH(params);
-    RGB_MATRIX_USE_LIMITS(led_min, led_max);
-    if (led_max > 48) {
-        led_max = 48;
-    }
-    for (uint8_t i = led_min; i < led_max; i++) {
-        switch (game_mask[i]) {
-            case 1:
-                rgb_matrix_set_color(i, 0, 255, 0);
-                break;
-            default:
-                continue;
-        }
-    }
-    return (led_max < DRIVER_LED_TOTAL) || super;
-}
-
-
-static bool numpad(effect_params_t* params) {
-    RGB_MATRIX_USE_LIMITS(led_min, led_max);
-    if (led_max > 48) {
-        led_max = 48;
-    }
-    for (uint8_t i = led_min; i < led_max; i++) {
-        HSV hsv = rgb_matrix_config.hsv;
-        if (numpad_mask[i]) {
-            hsv.h += rgb_matrix_config.speed / 2;
-        }
-        if (HAS_FLAGS(g_led_config.flags[i], LED_FLAG_MODIFIER)) {
-            hsv.h += rgb_matrix_config.speed;
-        }
-        RGB rgb = hsv_to_rgb(hsv);
-        rgb_matrix_set_color(i, rgb.r, rgb.g, rgb.b);
     }
     return led_max < DRIVER_LED_TOTAL;
 }
