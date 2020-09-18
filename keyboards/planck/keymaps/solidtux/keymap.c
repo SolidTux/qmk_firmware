@@ -20,7 +20,7 @@
 
 enum planck_layers { _QWERTY, _GAME, _LOWER, _RAISE, _ADJUST, _NUMPAD, _MOUSE };
 
-enum planck_keycodes { QWERTY = SAFE_RANGE, COLOR, HEATMAP, IMAGE, RGBANIM, LED_LEV, SCREENS };
+enum planck_keycodes { QWERTY = SAFE_RANGE, COLOR, HEATMAP, IMAGE, RGBANIM, LED_LEV, SCREENS, HEART };
 
 #define LOWER MO(_LOWER)
 #define RAISE MO(_RAISE)
@@ -31,6 +31,21 @@ enum planck_keycodes { QWERTY = SAFE_RANGE, COLOR, HEATMAP, IMAGE, RGBANIM, LED_
 #define ESCAPE MT(MOD_RALT, KC_ESC)
 #define LSHIFT MT(MOD_LSFT, KC_BSLS)
 #define RSHIFT MT(MOD_RSFT, KC_ENT)
+#define SMILE X(U_SMILE)
+#define WINK X(U_WINK)
+#define KISS X(U_KISS)
+
+enum unicode_names {
+    U_SMILE,
+    U_WINK,
+    U_KISS,
+};
+
+const uint32_t PROGMEM unicode_map[] = {
+    [U_SMILE] = 0x1F642,  // 🙂
+    [U_WINK]  = 0x1F609,  // 😉
+    [U_KISS]  = 0x1F618,  // 😘
+};
 
 // clang-format off
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -59,8 +74,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______
 ),
 [_NUMPAD] = LAYOUT_planck_grid(
-    GAME,    _______, _______, _______, _______, _______, _______, KC_KP_7, KC_KP_8, KC_KP_9, KC_PPLS, _______,
-    QWERTY,  _______, _______, _______, _______, _______, _______, KC_KP_4, KC_KP_5, KC_KP_6, KC_PMNS, KC_NUMLOCK,
+    GAME,    SMILE,   WINK,    _______, _______, _______, _______, KC_KP_7, KC_KP_8, KC_KP_9, KC_PPLS, _______,
+    QWERTY,  HEART,   KISS,    _______, _______, _______, _______, KC_KP_4, KC_KP_5, KC_KP_6, KC_PMNS, KC_NUMLOCK,
     _______, _______, _______, _______, _______, _______, _______, KC_KP_1, KC_KP_2, KC_KP_3, KC_PAST, _______,
     _______, _______, _______, _______, MOUSE,   _______, _______, KC_KP_0, KC_PDOT, KC_PEQL, KC_PSLS, _______
 ),
@@ -78,30 +93,30 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 )
 };
 
-bool PROGMEM numpad_mask[47] = {
-    0,0,0,0,0,0,0,1,1,1,1,0,
-    0,0,0,0,0,0,0,1,1,1,1,1,
-    0,0,0,0,0,0,0,1,1,1,1,0,
-    0,0,0,0,0,0,  1,1,1,1,0
+uint8_t PROGMEM numpad_mask[47] = {
+    0,2,2,0,0,0,0,2,2,2,6,0,
+    0,7,7,0,0,0,0,2,2,2,6,2,
+    0,0,0,0,0,0,0,2,2,2,6,0,
+    0,0,0,0,0,0,  2,1,1,6,0
 };
 
-bool PROGMEM game_mask[47] = {
-    0,0,1,0,0,0,0,0,0,0,0,0,
-    0,1,1,1,0,0,0,0,0,0,0,0,
+uint8_t PROGMEM game_mask[47] = {
+    0,0,2,0,0,0,0,0,0,0,0,0,
+    0,2,2,2,0,0,0,0,0,0,0,0,
     0,0,0,0,0,0,0,0,0,0,0,0,
     0,0,0,0,0,0,  0,0,0,0,0
 };
 
-bool PROGMEM mouse_mask[47] = {
-    0,0,0,0,0,0,0,0,1,1,1,0,
-    0,0,0,0,0,0,0,0,1,1,1,1,
-    0,0,0,0,0,0,0,0,1,1,1,1,
-    0,0,0,0,0,0,  0,1,1,1,1
+uint8_t PROGMEM mouse_mask[47] = {
+    0,0,0,0,0,0,0,0,2,2,2,0,
+    0,0,0,0,0,0,0,0,2,2,2,2,
+    0,0,0,0,0,0,0,0,2,2,2,2,
+    0,0,0,0,0,0,  0,2,2,2,2
 };
 // clang-format on
 
-uint8_t last_layer = 0;
-uint8_t last_mode  = RGB_MATRIX_EFFECT_MAX;
+uint8_t last_layer    = 0;
+uint8_t last_mode     = RGB_MATRIX_EFFECT_MAX;
 uint8_t current_layer = 0;
 uint8_t default_layer = 0;
 
@@ -109,7 +124,7 @@ layer_state_t layer_state_set_user(layer_state_t state) {
     state         = update_tri_layer_state(state, _LOWER, _RAISE, _ADJUST);
     uint8_t layer = biton32(state);
     current_layer = layer;
-    last_layer = layer;
+    last_layer    = layer;
     return state;
 }
 
@@ -128,7 +143,7 @@ layer_state_t default_layer_state_set_user(layer_state_t state) {
 }
 
 void rgb_matrix_indicators_kb(void) {
-    bool* mask = 0;
+    uint8_t* mask = 0;
     switch (default_layer) {
         case _GAME:
             mask = game_mask;
@@ -146,9 +161,9 @@ void rgb_matrix_indicators_kb(void) {
         return;
     }
     for (uint8_t i = 0; i < 47; i++) {
-        if (mask[i]) {
+        if (mask[i] > 0) {
             HSV hsv = rgb_matrix_config.hsv;
-            hsv.h += rgb_matrix_config.speed / 2;
+            hsv.h += (255 * mask[i]) / 8;
             RGB rgb = hsv_to_rgb(hsv);
             rgb_matrix_set_color(i, rgb.r, rgb.g, rgb.b);
         }
@@ -169,7 +184,7 @@ bool led_update_user(led_t led_state) {
     return true;
 }
 
-bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+bool process_record_user(uint16_t keycode, keyrecord_t* record) {
     switch (keycode) {
         case QWERTY:
             if (record->event.pressed) {
@@ -215,6 +230,11 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 host_consumer_send(0x19E);
             } else {
                 host_consumer_send(0);
+            }
+            return false;
+        case HEART:
+            if (record->event.pressed) {
+                send_unicode_hex_string("2764 FE0F");
             }
             return false;
     }
