@@ -74,8 +74,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______
 ),
 [_NUMPAD] = LAYOUT_planck_grid(
-    GAME,    SMILE,   WINK,    _______, _______, _______, _______, KC_KP_7, KC_KP_8, KC_KP_9, KC_PPLS, _______,
-    QWERTY,  HEART,   KISS,    _______, _______, _______, _______, KC_KP_4, KC_KP_5, KC_KP_6, KC_PMNS, KC_NUMLOCK,
+    QWERTY,  SMILE,   WINK,    _______, _______, _______, _______, KC_KP_7, KC_KP_8, KC_KP_9, KC_PPLS, _______,
+    GAME,    HEART,   KISS,    _______, _______, _______, _______, KC_KP_4, KC_KP_5, KC_KP_6, KC_PMNS, KC_NUMLOCK,
     _______, _______, _______, _______, _______, _______, _______, KC_KP_1, KC_KP_2, KC_KP_3, KC_PAST, _______,
     _______, _______, _______, _______, MOUSE,   _______, _______, KC_KP_0, KC_PDOT, KC_PEQL, KC_PSLS, _______
 ),
@@ -86,10 +86,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     _______, _______, _______, _______, _______, _______, _______, _______, KC_MS_L, KC_MS_D, KC_MS_U, KC_MS_R
 ),
 [_GAME] = LAYOUT_planck_grid(
-    KC_TAB,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_BSPC,
-    ESCAPE,  KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,
-    LSHIFT,  KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, RSHIFT,
-    NUMPAD,  KC_LCTL, KC_LALT, KC_LGUI, RAISE,   KC_SPC,  KC_SPC,  KC_F12,  KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT
+    KC_TAB,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_Y,    KC_U,    KC_UP,   KC_O,    KC_P,    KC_BSPC,
+    ESCAPE,  KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_LEFT, KC_DOWN, KC_RGHT, KC_SCLN, KC_QUOT,
+    KC_LSFT, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, RSHIFT,
+    NUMPAD,  KC_LCTL, KC_LALT, KC_LGUI, RAISE,   KC_SPC,  KC_SPC,  RAISE,   KC_LEFT, KC_DOWN, KC_UP,   KC_F12
 )
 };
 
@@ -101,8 +101,8 @@ uint8_t PROGMEM numpad_mask[47] = {
 };
 
 uint8_t PROGMEM game_mask[47] = {
-    0,0,2,0,0,0,0,0,0,0,0,0,
-    0,2,2,2,0,0,0,0,0,0,0,0,
+    0,0,2,0,0,0,0,0,4,0,0,0,
+    0,2,2,2,0,0,0,4,4,4,0,0,
     0,0,0,0,0,0,0,0,0,0,0,0,
     0,0,0,0,0,0,  0,0,0,0,0
 };
@@ -188,7 +188,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t* record) {
     switch (keycode) {
         case QWERTY:
             if (record->event.pressed) {
-                print("mode just switched to qwerty and this is a huge string\n");
                 set_single_persistent_default_layer(_QWERTY);
             }
             return false;
