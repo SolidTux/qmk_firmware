@@ -17,6 +17,7 @@
 #include QMK_KEYBOARD_H
 #include "muse.h"
 #include <virtser.h>
+#include <print.h>
 
 enum planck_layers { _QWERTY, _GAME, _LOWER, _RAISE, _ADJUST, _NUMPAD, _MOUSE };
 
@@ -71,7 +72,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     SCREENS, _______, AU_ON,   AU_OFF,  _______, RGBANIM, IMAGE,   LED_LEV, _______, _______, _______, KC_DEL,
     KC_WFAV, _______, MI_ON,   MI_OFF,  _______, COLOR,   HEATMAP, RGB_TOG, RGB_VAI, RGB_VAD, _______, RESET,
     KC_CAPS, _______, MU_ON,   MU_OFF,  MU_MOD,  _______, _______, RGB_MOD, RGB_HUI, RGB_HUD, _______, _______,
-    _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______
+    DEBUG,   _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______
 ),
 [_NUMPAD] = LAYOUT_planck_grid(
     QWERTY,  SMILE,   WINK,    _______, _______, _______, _______, KC_KP_7, KC_KP_8, KC_KP_9, KC_PPLS, _______,
@@ -86,9 +87,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     _______, _______, _______, _______, _______, _______, _______, _______, KC_MS_L, KC_MS_D, KC_MS_U, KC_MS_R
 ),
 [_GAME] = LAYOUT_planck_grid(
-    KC_TAB,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_Y,    KC_U,    KC_UP,   KC_O,    KC_P,    KC_BSPC,
-    ESCAPE,  KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_LEFT, KC_DOWN, KC_RGHT, KC_SCLN, KC_QUOT,
-    KC_LSFT, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, RSHIFT,
+    KC_TAB,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_Y,    KC_U,    KC_I,   KC_O,    KC_P,    KC_BSPC,
+    ESCAPE,  KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,
+    LSHIFT,  KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, RSHIFT,
     NUMPAD,  KC_LCTL, KC_LALT, KC_LGUI, RAISE,   KC_SPC,  KC_SPC,  RAISE,   KC_LEFT, KC_DOWN, KC_UP,   KC_F12
 )
 };
@@ -101,8 +102,8 @@ uint8_t PROGMEM numpad_mask[47] = {
 };
 
 uint8_t PROGMEM game_mask[47] = {
-    0,0,2,0,0,0,0,0,4,0,0,0,
-    0,2,2,2,0,0,0,4,4,4,0,0,
+    0,0,2,0,0,0,0,0,0,0,0,0,
+    0,2,2,2,0,0,0,0,0,0,0,0,
     0,0,0,0,0,0,0,0,0,0,0,0,
     0,0,0,0,0,0,  0,0,0,0,0
 };
@@ -116,7 +117,6 @@ uint8_t PROGMEM mouse_mask[47] = {
 // clang-format on
 
 uint8_t last_layer    = 0;
-uint8_t last_mode     = RGB_MATRIX_EFFECT_MAX;
 uint8_t current_layer = 0;
 uint8_t default_layer = 0;
 
@@ -333,11 +333,12 @@ void suspend_power_down_user(void) {
     planck_ez_right_led_off();
 }
 
-typedef enum { CMD_RGB_MODE, CMD_COLOR, CMD_PIXEL, CMD_LAST } cmd_t;
+typedef enum { CMD_NOP, CMD_RGB_MODE, CMD_COLOR, CMD_PIXEL, CMD_RGB_SAVE, CMD_RGB_RESTORE, CMD_LAST } cmd_t;
 
 uint8_t ser_buffer[256];
 uint8_t ser_counter = 0;
 uint8_t ser_length  = 0;
+uint8_t ser_mode    = 10;
 
 void virtser_recv(uint8_t c) {
     if (ser_counter == 0) {
@@ -345,7 +346,7 @@ void virtser_recv(uint8_t c) {
     } else {
         ser_buffer[ser_counter - 1] = c;
     }
-    if (ser_counter == ser_length) {
+    if (ser_counter == ser_length && ser_counter > 0) {
         cmd_t cmd = (cmd_t)ser_buffer[0];
         switch (cmd) {
             case CMD_RGB_MODE:
@@ -359,9 +360,20 @@ void virtser_recv(uint8_t c) {
                 rgb_matrix_config.mode = RGB_MATRIX_EFFECT_MAX;
                 rgb_matrix_set_color(ser_buffer[1], ser_buffer[2], ser_buffer[3], ser_buffer[4]);
                 break;
+            case CMD_RGB_SAVE:
+                ser_mode = rgb_matrix_config.mode;
+                break;
+            case CMD_RGB_RESTORE:
+                rgb_matrix_config.mode = ser_mode;
+                break;
             default:
                 break;
         }
+        dprintf("ser_counter %02X | ser_length %02X | ser_mode %02X | ser_buffer", ser_counter, ser_length, ser_mode);
+        for (uint8_t i=0; i<16; i++) {
+            dprintf(" %02X", ser_buffer[i]);
+        }
+        dprint("\n");
         ser_counter = 0;
     } else {
         ser_counter++;
