@@ -369,11 +369,6 @@ void virtser_recv(uint8_t c) {
             default:
                 break;
         }
-        dprintf("ser_counter %02X | ser_length %02X | ser_mode %02X | ser_buffer", ser_counter, ser_length, ser_mode);
-        for (uint8_t i=0; i<16; i++) {
-            dprintf(" %02X", ser_buffer[i]);
-        }
-        dprint("\n");
         ser_counter = 0;
     } else {
         ser_counter++;
