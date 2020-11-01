@@ -142,8 +142,20 @@ layer_state_t default_layer_state_set_user(layer_state_t state) {
     return state;
 }
 
+bool    progress_enable[4] = {false, false, false, false};
+uint8_t progress[4]        = {0, 0, 0, 0};
+RGB     progress_color[4]  = {
+    {255, 255, 255},
+    {255, 255, 255},
+    {255, 255, 255},
+    {255, 255, 255},
+};
+
 void rgb_matrix_indicators_kb(void) {
     uint8_t* mask = 0;
+    if (rgb_matrix_config.mode == RGB_MATRIX_EFFECT_MAX) {
+        return;
+    }
     switch (default_layer) {
         case _GAME:
             mask = game_mask;
@@ -157,15 +169,32 @@ void rgb_matrix_indicators_kb(void) {
             mask = mouse_mask;
             break;
     }
-    if (mask == 0) {
+    bool cont = mask != 0;
+    for (uint8_t i = 0; i < 4; i++) {
+        cont = cont || progress_enable[i];
+    }
+    if (!cont) {
         return;
     }
     for (uint8_t i = 0; i < 47; i++) {
-        if (mask[i] > 0) {
-            HSV hsv = rgb_matrix_config.hsv;
-            hsv.h += (255 * mask[i]) / 8;
-            RGB rgb = hsv_to_rgb(hsv);
-            rgb_matrix_set_color(i, rgb.r, rgb.g, rgb.b);
+        uint8_t x = i % 12;
+        uint8_t y = i / 12;
+        if (y == 3 && x > 4) {
+            x++;
+        }
+        if (mask != 0) {
+            if (mask[i] > 0) {
+                HSV hsv = rgb_matrix_config.hsv;
+                hsv.h += (255 * mask[i]) / 8;
+                RGB rgb = hsv_to_rgb(hsv);
+                rgb_matrix_set_color(i, rgb.r, rgb.g, rgb.b);
+            }
+        } else if (progress_enable[y]) {
+            if (progress[y] > x) {
+                rgb_matrix_set_color(i, progress_color[y].r, progress_color[y].g, progress_color[y].b);
+            } else {
+                rgb_matrix_set_color(i, 0, 0, 0);
+            }
         }
     }
 }
@@ -331,9 +360,12 @@ bool music_mask_user(uint16_t keycode) {
 void suspend_power_down_user(void) {
     planck_ez_left_led_off();
     planck_ez_right_led_off();
+    rgb_matrix_set_suspend_state(true);
 }
 
-typedef enum { CMD_NOP, CMD_RGB_MODE, CMD_COLOR, CMD_PIXEL, CMD_RGB_SAVE, CMD_RGB_RESTORE, CMD_LAST } cmd_t;
+void suspend_wakeup_init_user(void) { rgb_matrix_set_suspend_state(false); }
+
+typedef enum { CMD_NOP, CMD_RGB_MODE, CMD_COLOR, CMD_PIXEL, CMD_RGB_SAVE, CMD_RGB_RESTORE, CMD_PROGRESS, CMD_LAST } cmd_t;
 
 uint8_t ser_buffer[256];
 uint8_t ser_counter = 0;
@@ -365,6 +397,13 @@ void virtser_recv(uint8_t c) {
                 break;
             case CMD_RGB_RESTORE:
                 rgb_matrix_config.mode = ser_mode;
+                break;
+            case CMD_PROGRESS:
+                progress_enable[ser_buffer[1]]  = ser_buffer[2];
+                progress[ser_buffer[1]]         = ser_buffer[3];
+                progress_color[ser_buffer[1]].r = ser_buffer[4];
+                progress_color[ser_buffer[1]].g = ser_buffer[5];
+                progress_color[ser_buffer[1]].b = ser_buffer[6];
                 break;
             default:
                 break;
