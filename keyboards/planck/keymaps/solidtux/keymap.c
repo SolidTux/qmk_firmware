@@ -21,7 +21,23 @@
 
 enum planck_layers { _QWERTY, _GAME, _LOWER, _RAISE, _ADJUST, _NUMPAD, _MOUSE };
 
-enum planck_keycodes { QWERTY = SAFE_RANGE, COLOR, HEATMAP, IMAGE, RGBANIM, LED_LEV, SCREENS };
+enum planck_keycodes {
+    QWERTY = SAFE_RANGE,
+    COLOR,
+    HEATMAP,
+    IMAGE,
+    RGBANIM,
+    LED_LEV,
+    SCREENS,
+    EMOJI1,
+    EMOJI2,
+    EMOJI3,
+    EMOJI4,
+    EMOJI5,
+    EMOJI6,
+    EMOJI7,
+    EMOJI8,
+};
 
 #define LOWER MO(_LOWER)
 #define RAISE MO(_RAISE)
@@ -32,32 +48,6 @@ enum planck_keycodes { QWERTY = SAFE_RANGE, COLOR, HEATMAP, IMAGE, RGBANIM, LED_
 #define ESCAPE MT(MOD_RALT, KC_ESC)
 #define LSHIFT MT(MOD_LSFT, KC_BSLS)
 #define RSHIFT MT(MOD_RSFT, KC_ENT)
-#define EMOJI1 X(U_SMILE)
-#define EMOJI2 X(U_WINK)
-#define EMOJI3 X(U_LAUGH)
-#define EMOJI4 X(U_SEE)
-#define EMOJI5 X(U_FACEPALM)
-#define EMOJI6 X(U_SHRUG)
-
-enum unicode_names {
-    U_SMILE,
-    U_WINK,
-    U_KISS,
-    U_SEE,
-    U_LAUGH,
-    U_FACEPALM,
-    U_SHRUG,
-};
-
-const uint32_t PROGMEM unicode_map[] = {
-    [U_SMILE]    = 0x1F642,  // 🙂
-    [U_WINK]     = 0x1F609,  // 😉
-    [U_KISS]     = 0x1F618,  // 😘
-    [U_SEE]      = 0x1F648,  // 🙈
-    [U_LAUGH]    = 0x1F602,  // 🤣
-    [U_FACEPALM] = 0x1F926,  // 🤦
-    [U_SHRUG]    = 0x1F937,  // 🤷
-};
 
 // clang-format off
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -86,8 +76,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     DEBUG,   _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______
 ),
 [_NUMPAD] = LAYOUT_planck_grid(
-    QWERTY,  EMOJI1,  EMOJI2,  EMOJI3,  _______, _______, _______, KC_KP_7, KC_KP_8, KC_KP_9, KC_PPLS, _______,
-    GAME,    EMOJI4,  EMOJI5,  EMOJI6,  _______, _______, _______, KC_KP_4, KC_KP_5, KC_KP_6, KC_PMNS, KC_NUMLOCK,
+    QWERTY,  EMOJI1,  EMOJI2,  EMOJI3,  EMOJI4,  _______, _______, KC_KP_7, KC_KP_8, KC_KP_9, KC_PPLS, _______,
+    GAME,    EMOJI5,  EMOJI6,  EMOJI7,  EMOJI8,  _______, _______, KC_KP_4, KC_KP_5, KC_KP_6, KC_PMNS, KC_NUMLOCK,
     _______, _______, _______, _______, _______, _______, _______, KC_KP_1, KC_KP_2, KC_KP_3, KC_PAST, _______,
     _______, _______, _______, _______, MOUSE,   _______, _______, KC_KP_0, KC_PDOT, KC_PEQL, KC_PSLS, _______
 ),
@@ -100,13 +90,13 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 [_GAME] = LAYOUT_planck_grid(
     KC_TAB,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_Y,    KC_U,    KC_I,   KC_O,    KC_P,    KC_BSPC,
     ESCAPE,  KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,
-    LSHIFT,  KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, RSHIFT,
-    NUMPAD,  KC_LCTL, KC_LALT, KC_LGUI, RAISE,   KC_SPC,  KC_SPC,  RAISE,   KC_LEFT, KC_DOWN, KC_UP,   KC_F12
+    KC_LSHIFT,  KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, KC_ENT,
+    NUMPAD,  KC_LCTL, KC_LALT, KC_LGUI, RAISE,   KC_SPC,  KC_SPC,  RAISE,   KC_LEFT, KC_F12,  KC_BTN5, KC_F13
 )
 };
 
 uint8_t PROGMEM numpad_mask[47] = {
-    0,1,1,1,0,0,0,2,2,2,6,0,
+    0,1,1,1,1,0,0,2,2,2,6,0,
     0,1,1,1,0,0,0,2,2,2,6,2,
     0,0,0,0,0,0,0,2,2,2,6,0,
     0,0,0,0,0,0,  2,1,1,6,0
@@ -269,6 +259,46 @@ bool process_record_user(uint16_t keycode, keyrecord_t* record) {
                 host_consumer_send(0x19E);
             } else {
                 host_consumer_send(0);
+            }
+            return false;
+        case EMOJI1:
+            if (record->event.pressed) {
+                send_unicode_string("🙂");
+            }
+            return false;
+        case EMOJI2:
+            if (record->event.pressed) {
+                send_unicode_string("😉");
+            }
+            return false;
+        case EMOJI3:
+            if (record->event.pressed) {
+                send_unicode_string("😂");
+            }
+            return false;
+        case EMOJI4:
+            if (record->event.pressed) {
+                send_unicode_string("☺️");
+            }
+            return false;
+        case EMOJI5:
+            if (record->event.pressed) {
+                send_unicode_string("🙈");
+            }
+            return false;
+        case EMOJI6:
+            if (record->event.pressed) {
+                send_unicode_string("🤦");
+            }
+            return false;
+        case EMOJI7:
+            if (record->event.pressed) {
+                send_unicode_string("🤷");
+            }
+            return false;
+        case EMOJI8:
+            if (record->event.pressed) {
+                send_unicode_string("🎉");
             }
             return false;
     }
