@@ -229,10 +229,8 @@ void process_rgb_matrix(uint8_t row, uint8_t col, bool pressed) {
     }
 #endif  // defined(RGB_MATRIX_FRAMEBUFFER_EFFECTS) && !defined(DISABLE_RGB_MATRIX_TYPING_HEATMAP)
     if (rgb_matrix_config.mode == RGB_MATRIX_CUSTOM_alphamap) {
-        process_rgb_matrix_typing_alphamap(record);
+        process_rgb_matrix_typing_alphamap(row, col);
     }
-
-    return true;
 }
 
 void rgb_matrix_test(void) {

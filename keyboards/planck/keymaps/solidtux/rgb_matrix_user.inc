@@ -27,12 +27,7 @@ static bool image(effect_params_t* params) {
     return led_max < DRIVER_LED_TOTAL;
 }
 
-void process_rgb_matrix_typing_alphamap(keyrecord_t* record) {
-    uint8_t row = record->event.key.row;
-    uint8_t col = record->event.key.col;
-
-    g_rgb_frame_buffer[row][col] = qadd8(g_rgb_frame_buffer[row][col], 32);
-}
+void process_rgb_matrix_typing_alphamap(uint8_t row, uint8_t col) { g_rgb_frame_buffer[row][col] = qadd8(g_rgb_frame_buffer[row][col], 32); }
 
 bool alphamap(effect_params_t* params) {
     // Modified version of RGB_MATRIX_USE_LIMITS to work off of matrix row / col size
