@@ -19,7 +19,7 @@
 #include <virtser.h>
 #include <print.h>
 
-enum planck_layers { _QWERTY, _GAME, _LOWER, _RAISE, _ADJUST, _NUMPAD, _MOUSE };
+enum planck_layers { _QWERTY, _GAME, _GAME_ARROW, _LOWER, _RAISE, _ADJUST, _NUMPAD, _MOUSE };
 
 enum planck_keycodes {
     QWERTY = SAFE_RANGE,
@@ -44,6 +44,7 @@ enum planck_keycodes {
 #define RAISE MO(_RAISE)
 #define NUMPAD TT(_NUMPAD)
 #define GAME DF(_GAME)
+#define GAMEARR DF(_GAME_ARROW)
 #define QWERTY DF(_QWERTY)
 #define MOUSE MO(_MOUSE)
 #define ESCAPE MT(MOD_RALT, KC_ESC)
@@ -79,7 +80,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 [_NUMPAD] = LAYOUT_planck_grid(
     QWERTY,  EMOJI1,  EMOJI2,  EMOJI3,  EMOJI4,  _______, _______, KC_KP_7, KC_KP_8, KC_KP_9, KC_PPLS, _______,
     GAME,    EMOJI5,  EMOJI6,  EMOJI7,  EMOJI8,  _______, _______, KC_KP_4, KC_KP_5, KC_KP_6, KC_PMNS, KC_NUMLOCK,
-    _______, _______, _______, _______, _______, _______, _______, KC_KP_1, KC_KP_2, KC_KP_3, KC_PAST, _______,
+    GAMEARR, _______, _______, _______, _______, _______, _______, KC_KP_1, KC_KP_2, KC_KP_3, KC_PAST, _______,
     _______, _______, _______, _______, MOUSE,   _______, _______, KC_KP_0, KC_PDOT, KC_PEQL, KC_PSLS, _______
 ),
 [_MOUSE] = LAYOUT_planck_grid(
@@ -89,10 +90,16 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     _______, _______, _______, _______, _______, _______, _______, _______, KC_MS_L, KC_MS_D, KC_MS_U, KC_MS_R
 ),
 [_GAME] = LAYOUT_planck_grid(
-    KC_TAB,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_Y,    KC_U,    KC_I,   KC_O,    KC_P,    KC_BSPC,
+    KC_TAB,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_BSPC,
     ESCAPE,  KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,
-    KC_LSHIFT,  KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, KC_ENT,
-    NUMPAD,  KC_LCTL, KC_LALT, KC_LGUI, RAISE,   KC_SPC,  KC_SPC,  RAISE,   KC_LEFT, KC_F12,  KC_BTN5, KC_F13
+    KC_LSHIFT,KC_Z,   KC_X,    KC_C,    KC_V,    KC_B,    KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, KC_ENT,
+    NUMPAD,  KC_LCTL, KC_LALT, KC_LGUI, RAISE,   KC_SPC,  KC_SPC,  RAISE,   KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT
+),
+[_GAME_ARROW] = LAYOUT_planck_grid(
+    KC_TAB,  KC_Q,    KC_UP,   KC_E,    KC_R,    KC_T,    KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_BSPC,
+    ESCAPE,  KC_LEFT, KC_DOWN, KC_RGHT, KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,
+    KC_LSHIFT,KC_Z,   KC_X,    KC_C,    KC_V,    KC_B,    KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, KC_ENT,
+    NUMPAD,  KC_LCTL, KC_LALT, KC_LGUI, RAISE,   KC_SPC,  KC_SPC,  RAISE,   KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT
 )
 };
 
@@ -106,6 +113,13 @@ uint8_t PROGMEM numpad_mask[47] = {
 uint8_t PROGMEM game_mask[47] = {
     0,0,2,0,0,0,0,0,0,0,0,0,
     0,2,2,2,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,  0,0,0,0,0
+};
+
+uint8_t PROGMEM game_arrow_mask[47] = {
+    0,0,4,0,0,0,0,0,0,0,0,0,
+    0,4,4,4,0,0,0,0,0,0,0,0,
     0,0,0,0,0,0,0,0,0,0,0,0,
     0,0,0,0,0,0,  0,0,0,0,0
 };
@@ -137,6 +151,9 @@ layer_state_t default_layer_state_set_user(layer_state_t state) {
         case _GAME:
             rgb_matrix_config.mode = RGB_MATRIX_SPLASH;
             break;
+        case _GAME_ARROW:
+            rgb_matrix_config.mode = RGB_MATRIX_SPLASH;
+            break;
         case _QWERTY:
             rgb_matrix_config.mode = RGB_MATRIX_STARTUP_MODE;
             break;
@@ -161,6 +178,9 @@ void rgb_matrix_indicators_kb(void) {
     switch (default_layer) {
         case _GAME:
             mask = game_mask;
+            break;
+        case _GAME_ARROW:
+            mask = game_arrow_mask;
             break;
     }
     switch (current_layer) {
