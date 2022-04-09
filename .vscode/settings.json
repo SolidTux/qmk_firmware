@@ -23,5 +23,8 @@
         "editor.trimAutoWhitespace": false,
         "files.trimTrailingWhitespace": false
     },
-    "git.ignoreLimitWarning": true
+    "python.formatting.provider": "yapf",
+    "[json]": {
+        "editor.formatOnSave": false
+    }
 }
