@@ -15,30 +15,10 @@
  */
 
 #include QMK_KEYBOARD_H
+#include "solidtux.h"
 #include "muse.h"
 #include <virtser.h>
 #include <print.h>
-
-enum planck_layers { _QWERTY, _GAME, _GAME_ARROW, _LOWER, _RAISE, _ADJUST, _NUMPAD, _MOUSE };
-
-enum planck_keycodes {
-    QWERTY = SAFE_RANGE,
-    COLOR,
-    HEATMAP,
-    IMAGE,
-    RGBANIM,
-    LED_LEV,
-    SCREENS,
-    EMOJI1,
-    EMOJI2,
-    EMOJI3,
-    EMOJI4,
-    EMOJI5,
-    EMOJI6,
-    EMOJI7,
-    EMOJI8,
-    HALF_SP,
-};
 
 #define LOWER MO(_LOWER)
 #define RAISE MO(_RAISE)
@@ -161,20 +141,8 @@ layer_state_t default_layer_state_set_user(layer_state_t state) {
     return state;
 }
 
-bool    progress_enable[4] = {false, false, false, false};
-uint8_t progress[4]        = {0, 0, 0, 0};
-RGB     progress_color[4]  = {
-    {255, 255, 255},
-    {255, 255, 255},
-    {255, 255, 255},
-    {255, 255, 255},
-};
-
-void rgb_matrix_indicators_kb(void) {
+uint8_t* rgb_matrix_mask_kb(void) {
     uint8_t* mask = 0;
-    if (rgb_matrix_config.mode == RGB_MATRIX_EFFECT_MAX) {
-        return;
-    }
     switch (default_layer) {
         case _GAME:
             mask = game_mask;
@@ -191,34 +159,7 @@ void rgb_matrix_indicators_kb(void) {
             mask = mouse_mask;
             break;
     }
-    bool cont = mask != 0;
-    for (uint8_t i = 0; i < 4; i++) {
-        cont = cont || progress_enable[i];
-    }
-    if (!cont) {
-        return;
-    }
-    for (uint8_t i = 0; i < 47; i++) {
-        uint8_t x = i % 12;
-        uint8_t y = i / 12;
-        if (y == 3 && x > 4) {
-            x++;
-        }
-        if (mask != 0) {
-            if (mask[i] > 0) {
-                HSV hsv = rgb_matrix_config.hsv;
-                hsv.h += (255 * mask[i]) / 8;
-                RGB rgb = hsv_to_rgb(hsv);
-                rgb_matrix_set_color(i, rgb.r, rgb.g, rgb.b);
-            }
-        } else if (progress_enable[y]) {
-            if (progress[y] > x) {
-                rgb_matrix_set_color(i, progress_color[y].r, progress_color[y].g, progress_color[y].b);
-            } else {
-                rgb_matrix_set_color(i, 0, 0, 0);
-            }
-        }
-    }
+    return mask;
 }
 
 bool led_update_user(led_t led_state) {
@@ -329,149 +270,4 @@ bool process_record_user(uint16_t keycode, keyrecord_t* record) {
             return false;
     }
     return true;
-}
-
-bool     muse_mode      = false;
-uint8_t  last_muse_note = 0;
-uint16_t muse_counter   = 0;
-uint8_t  muse_offset    = 70;
-uint16_t muse_tempo     = 50;
-
-void encoder_update(bool clockwise) {
-    if (muse_mode) {
-        if (IS_LAYER_ON(_RAISE)) {
-            if (clockwise) {
-                muse_offset++;
-            } else {
-                muse_offset--;
-            }
-        } else {
-            if (clockwise) {
-                muse_tempo += 1;
-            } else {
-                muse_tempo -= 1;
-            }
-        }
-    } else {
-        if (clockwise) {
-#ifdef MOUSEKEY_ENABLE
-            tap_code(KC_MS_WH_DOWN);
-#else
-            tap_code(KC_PGDN);
-#endif
-        } else {
-#ifdef MOUSEKEY_ENABLE
-            tap_code(KC_MS_WH_UP);
-#else
-            tap_code(KC_PGUP);
-#endif
-        }
-    }
-}
-
-void dip_switch_update_user(uint8_t index, bool active) {
-    switch (index) {
-        case 0: {
-            if (active) {
-                layer_on(_ADJUST);
-            } else {
-                layer_off(_ADJUST);
-            }
-            break;
-        }
-        case 1:
-            if (active) {
-                muse_mode = true;
-            } else {
-                muse_mode = false;
-            }
-    }
-}
-
-void matrix_scan_user(void) {
-#ifdef AUDIO_ENABLE
-    if (muse_mode) {
-        if (muse_counter == 0) {
-            uint8_t muse_note = muse_offset + SCALE[muse_clock_pulse()];
-            if (muse_note != last_muse_note) {
-                stop_note(compute_freq_for_midi_note(last_muse_note));
-                play_note(compute_freq_for_midi_note(muse_note), 0xF);
-                last_muse_note = muse_note;
-            }
-        }
-        muse_counter = (muse_counter + 1) % muse_tempo;
-    } else {
-        if (muse_counter) {
-            stop_all_notes();
-            muse_counter = 0;
-        }
-    }
-#endif
-}
-
-bool music_mask_user(uint16_t keycode) {
-    switch (keycode) {
-        case RAISE:
-        case LOWER:
-            return false;
-        default:
-            return true;
-    }
-}
-
-void suspend_power_down_user(void) {
-    planck_ez_left_led_off();
-    planck_ez_right_led_off();
-    rgb_matrix_set_suspend_state(true);
-}
-
-void suspend_wakeup_init_user(void) { rgb_matrix_set_suspend_state(false); }
-
-typedef enum { CMD_NOP, CMD_RGB_MODE, CMD_COLOR, CMD_PIXEL, CMD_RGB_SAVE, CMD_RGB_RESTORE, CMD_PROGRESS, CMD_LAST } cmd_t;
-
-uint8_t ser_buffer[256];
-uint8_t ser_counter = 0;
-uint8_t ser_length  = 0;
-uint8_t ser_mode    = 10;
-
-void virtser_recv(uint8_t c) {
-    if (ser_counter == 0) {
-        ser_length = c;
-    } else {
-        ser_buffer[ser_counter - 1] = c;
-    }
-    if (ser_counter == ser_length && ser_counter > 0) {
-        cmd_t cmd = (cmd_t)ser_buffer[0];
-        switch (cmd) {
-            case CMD_RGB_MODE:
-                rgb_matrix_config.mode = ser_buffer[1];
-                break;
-            case CMD_COLOR:
-                rgb_matrix_config.mode = RGB_MATRIX_EFFECT_MAX;
-                rgb_matrix_set_color_all(ser_buffer[1], ser_buffer[2], ser_buffer[3]);
-                break;
-            case CMD_PIXEL:
-                rgb_matrix_config.mode = RGB_MATRIX_EFFECT_MAX;
-                rgb_matrix_set_color(ser_buffer[1], ser_buffer[2], ser_buffer[3], ser_buffer[4]);
-                break;
-            case CMD_RGB_SAVE:
-                ser_mode = rgb_matrix_config.mode;
-                break;
-            case CMD_RGB_RESTORE:
-                rgb_matrix_config.mode = ser_mode;
-                break;
-            case CMD_PROGRESS:
-                progress_enable[ser_buffer[1]]  = ser_buffer[2];
-                progress[ser_buffer[1]]         = ser_buffer[3];
-                progress_color[ser_buffer[1]].r = ser_buffer[4];
-                progress_color[ser_buffer[1]].g = ser_buffer[5];
-                progress_color[ser_buffer[1]].b = ser_buffer[6];
-                break;
-            default:
-                break;
-        }
-        ser_counter = 0;
-    } else {
-        ser_counter++;
-    }
 }
