@@ -1,3 +1,4 @@
+#include QMK_KEYBOARD_H
 #include "solidtux.h"
 
 typedef enum { CMD_NOP, CMD_RGB_MODE, CMD_COLOR, CMD_PIXEL, CMD_RGB_SAVE, CMD_RGB_RESTORE, CMD_PROGRESS, CMD_LAST } cmd_t;
@@ -11,15 +12,44 @@ RGB     progress_color[4]  = {
     {255, 255, 255},
 };
 
-__attribute__((weak)) uint8_t* rgb_matrix_mask_kb(void) {
+__attribute__((weak)) uint8_t* rgb_matrix_mask_kb(uint8_t default_layer, uint8_t current_layer) {
     return 0;
+}
+
+uint8_t last_layer    = 0;
+uint8_t current_layer = 0;
+uint8_t default_layer = 0;
+
+layer_state_t layer_state_set_user(layer_state_t state) {
+    state         = update_tri_layer_state(state, _LOWER, _RAISE, _ADJUST);
+    uint8_t layer = biton32(state);
+    current_layer = layer;
+    last_layer    = layer;
+    return state;
+}
+
+layer_state_t default_layer_state_set_user(layer_state_t state) {
+    uint8_t layer = biton32(state);
+    default_layer = layer;
+    switch (layer) {
+        case _GAME:
+            rgb_matrix_config.mode = RGB_MATRIX_SPLASH;
+            break;
+        case _GAME_ARROW:
+            rgb_matrix_config.mode = RGB_MATRIX_SPLASH;
+            break;
+        case _QWERTY:
+            rgb_matrix_config.mode = RGB_MATRIX_STARTUP_MODE;
+            break;
+    }
+    return state;
 }
 
 void rgb_matrix_indicators_user(void) {
     if (rgb_matrix_config.mode == RGB_MATRIX_EFFECT_MAX) {
         return;
     }
-    uint8_t* mask = rgb_matrix_mask_kb();
+    uint8_t* mask = rgb_matrix_mask_kb(default_layer, current_layer);
     bool     cont = mask != 0;
     for (uint8_t i = 0; i < 4; i++) {
         cont = cont || progress_enable[i];
@@ -48,6 +78,97 @@ void rgb_matrix_indicators_user(void) {
             }
         }
     }
+}
+
+__attribute__((weak)) bool process_record_keyboard(uint16_t keycode, keyrecord_t* record) {
+    return true;
+}
+
+bool process_record_user(uint16_t keycode, keyrecord_t* record) {
+    if (!process_record_keyboard(keycode, record)) {
+        return false;
+    }
+    switch (keycode) {
+        case QWERTY:
+            if (record->event.pressed) {
+                set_single_persistent_default_layer(_QWERTY);
+            }
+            return false;
+            break;
+        case IMAGE:
+            if (record->event.pressed) {
+                rgb_matrix_config.mode = RGB_MATRIX_CUSTOM_image;
+            }
+            return false;
+        case RGBANIM:
+            if (record->event.pressed) {
+                rgb_matrix_config.mode = RGB_MATRIX_RAINBOW_MOVING_CHEVRON;
+            }
+            return false;
+        case COLOR:
+            if (record->event.pressed) {
+                rgb_matrix_config.mode = RGB_MATRIX_ALPHAS_MODS;
+            }
+            return false;
+        case HEATMAP:
+            if (record->event.pressed) {
+                eeconfig_update_rgb_matrix_default();
+            }
+            return false;
+        case SCREENS:
+            if (record->event.pressed) {
+                host_consumer_send(0x19E);
+            } else {
+                host_consumer_send(0);
+            }
+            return false;
+        case EMOJI1:
+            if (record->event.pressed) {
+                send_unicode_string("🙂");
+            }
+            return false;
+        case EMOJI2:
+            if (record->event.pressed) {
+                send_unicode_string("😉");
+            }
+            return false;
+        case EMOJI3:
+            if (record->event.pressed) {
+                send_unicode_string("😂");
+            }
+            return false;
+        case EMOJI4:
+            if (record->event.pressed) {
+                send_unicode_string("☺️");
+            }
+            return false;
+        case EMOJI5:
+            if (record->event.pressed) {
+                send_unicode_string("🙈");
+            }
+            return false;
+        case EMOJI6:
+            if (record->event.pressed) {
+                send_unicode_string("🤦");
+            }
+            return false;
+        case EMOJI7:
+            if (record->event.pressed) {
+                send_unicode_string("🤷");
+            }
+            return false;
+        case EMOJI8:
+            if (record->event.pressed) {
+                send_unicode_string("🎉");
+            }
+            return false;
+        case HALF_SP:
+            if (record->event.pressed) {
+                send_unicode_string(" ");
+            }
+            return false;
+    }
+    return true;
 }
 
 uint8_t ser_buffer[256];

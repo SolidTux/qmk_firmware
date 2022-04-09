@@ -13,20 +13,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 #include QMK_KEYBOARD_H
 #include "solidtux.h"
 #include "muse.h"
 #include <virtser.h>
 #include <print.h>
 
-#define LOWER MO(_LOWER)
-#define RAISE MO(_RAISE)
-#define NUMPAD TT(_NUMPAD)
-#define GAME DF(_GAME)
-#define GAMEARR DF(_GAME_ARROW)
-#define QWERTY DF(_QWERTY)
-#define MOUSE MO(_MOUSE)
 #define ESCAPE MT(MOD_RALT, KC_ESC)
 #define LSHIFT MT(MOD_LSFT, KC_BSLS)
 #define RSHIFT MT(MOD_RSFT, KC_ENT)
@@ -112,36 +104,7 @@ uint8_t PROGMEM mouse_mask[47] = {
 };
 // clang-format on
 
-uint8_t last_layer    = 0;
-uint8_t current_layer = 0;
-uint8_t default_layer = 0;
-
-layer_state_t layer_state_set_user(layer_state_t state) {
-    state         = update_tri_layer_state(state, _LOWER, _RAISE, _ADJUST);
-    uint8_t layer = biton32(state);
-    current_layer = layer;
-    last_layer    = layer;
-    return state;
-}
-
-layer_state_t default_layer_state_set_user(layer_state_t state) {
-    uint8_t layer = biton32(state);
-    default_layer = layer;
-    switch (layer) {
-        case _GAME:
-            rgb_matrix_config.mode = RGB_MATRIX_SPLASH;
-            break;
-        case _GAME_ARROW:
-            rgb_matrix_config.mode = RGB_MATRIX_SPLASH;
-            break;
-        case _QWERTY:
-            rgb_matrix_config.mode = RGB_MATRIX_STARTUP_MODE;
-            break;
-    }
-    return state;
-}
-
-uint8_t* rgb_matrix_mask_kb(void) {
+uint8_t* rgb_matrix_mask_kb(uint8_t default_layer, uint8_t current_layer) {
     uint8_t* mask = 0;
     switch (default_layer) {
         case _GAME:
@@ -176,34 +139,8 @@ bool led_update_user(led_t led_state) {
     return true;
 }
 
-bool process_record_user(uint16_t keycode, keyrecord_t* record) {
+bool process_record_keyboard(uint16_t keycode, keyrecord_t* record) {
     switch (keycode) {
-        case QWERTY:
-            if (record->event.pressed) {
-                set_single_persistent_default_layer(_QWERTY);
-            }
-            return false;
-            break;
-        case IMAGE:
-            if (record->event.pressed) {
-                rgb_matrix_config.mode = RGB_MATRIX_CUSTOM_image;
-            }
-            return false;
-        case RGBANIM:
-            if (record->event.pressed) {
-                rgb_matrix_config.mode = RGB_MATRIX_RAINBOW_MOVING_CHEVRON;
-            }
-            return false;
-        case COLOR:
-            if (record->event.pressed) {
-                rgb_matrix_config.mode = RGB_MATRIX_ALPHAS_MODS;
-            }
-            return false;
-        case HEATMAP:
-            if (record->event.pressed) {
-                eeconfig_update_rgb_matrix_default();
-            }
-            return false;
         case LED_LEV:
             if (record->event.pressed) {
                 keyboard_config.led_level++;
@@ -214,58 +151,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t* record) {
                 planck_ez_left_led_level((uint8_t)keyboard_config.led_level * 255 / 4);
                 eeconfig_update_kb(keyboard_config.raw);
                 layer_state_set_kb(layer_state);
-            }
-            return false;
-        case SCREENS:
-            if (record->event.pressed) {
-                host_consumer_send(0x19E);
-            } else {
-                host_consumer_send(0);
-            }
-            return false;
-        case EMOJI1:
-            if (record->event.pressed) {
-                send_unicode_string("🙂");
-            }
-            return false;
-        case EMOJI2:
-            if (record->event.pressed) {
-                send_unicode_string("😉");
-            }
-            return false;
-        case EMOJI3:
-            if (record->event.pressed) {
-                send_unicode_string("😂");
-            }
-            return false;
-        case EMOJI4:
-            if (record->event.pressed) {
-                send_unicode_string("☺️");
-            }
-            return false;
-        case EMOJI5:
-            if (record->event.pressed) {
-                send_unicode_string("🙈");
-            }
-            return false;
-        case EMOJI6:
-            if (record->event.pressed) {
-                send_unicode_string("🤦");
-            }
-            return false;
-        case EMOJI7:
-            if (record->event.pressed) {
-                send_unicode_string("🤷");
-            }
-            return false;
-        case EMOJI8:
-            if (record->event.pressed) {
-                send_unicode_string("🎉");
-            }
-            return false;
-        case HALF_SP:
-            if (record->event.pressed) {
-                send_unicode_string(" ");
             }
             return false;
     }

@@ -1,1 +1,6 @@
+RGB_MATRIX_CUSTOM_USER = yes
+VIRTSER_ENABLE = yes
+UNICODE_ENABLE = yes
+MOUSEKEY_ENABLE = no
+
 SRC += solidtux.c
