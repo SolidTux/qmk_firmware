@@ -2,7 +2,6 @@
 #define USERSPACE
 
 #include "quantum.h"
-#define RGB_MATRIX_CUSTOM_image RGB_MATRIX_EFFECT_MAX
 
 enum layers { _QWERTY, _GAME, _GAME_ARROW, _LOWER, _RAISE, _ADJUST, _NUMPAD, _MOUSE };
 
@@ -25,8 +24,8 @@ enum keycodes {
     HALF_SP,
 };
 
-#define LOWER MO(_LOWER)
-#define RAISE MO(_RAISE)
+#define LOWER TT(_LOWER)
+#define RAISE TT(_RAISE)
 #define NUMPAD TT(_NUMPAD)
 #define GAME DF(_GAME)
 #define GAMEARR DF(_GAME_ARROW)
