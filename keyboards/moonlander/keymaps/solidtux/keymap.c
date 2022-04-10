@@ -37,7 +37,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_GAME] = LAYOUT_moonlander(
         KC_EQL,  KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    LOWER,             LOWER,   KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_MINS,
         _______, KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    RAISE,             RAISE,   KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_BSLS,
-        _______, KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    QWERTY,            QWERTY, KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,
+        _______, KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    QWERTY,            GAMEARR, KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,
         KC_LSFT, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,                                KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, KC_RSFT,
         KC_LGUI, KC_LCTL, KC_LALT, KC_LEFT, KC_RGHT,          KC_RALT,           ESCCTL,           KC_UP,   KC_DOWN, KC_LBRC, KC_RBRC, KC_LGUI,
                                             KC_SPACE,KC_BSPC, KC_DEL,            SHTAB,   KC_TAB,  KC_ENT
@@ -46,7 +46,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_GAME_ARROW] = LAYOUT_moonlander(
         KC_EQL,  KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    LOWER,             LOWER,   KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_MINS,
         _______, KC_Q,    KC_UP,   KC_E,    KC_R,    KC_T,    RAISE,             RAISE,   KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_BSLS,
-        _______, KC_LEFT, KC_DOWN, KC_RIGHT,KC_F,    KC_G,    QWERTY,            QWERTY,  KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,
+        _______, KC_LEFT, KC_DOWN, KC_RIGHT,KC_F,    KC_G,    GAME,              QWERTY,  KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,
         KC_LSFT, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,                                KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, KC_RSFT,
         KC_LGUI, KC_LCTL, KC_LALT, KC_LEFT, KC_RGHT,          KC_RALT,           ESCCTL,           KC_UP,   KC_DOWN, KC_LBRC, KC_RBRC, KC_LGUI,
                                             KC_SPACE,KC_BSPC, KC_DEL,            SHTAB,   KC_TAB,  KC_ENT
@@ -66,11 +66,81 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         _______, _______, _______, KC_MS_U, _______, _______, _______,           _______, _______, _______, _______, _______, _______, _______,
         _______, _______, KC_MS_L, KC_MS_D, KC_MS_R, _______, _______,           _______, _______, _______, _______, _______, _______, KC_MPLY,
         _______, _______, _______, _______, _______, _______,                             _______, _______, KC_MPRV, KC_MNXT, _______, _______,
-        _______, _______, _______, KC_BTN1, KC_BTN2,         _______,            _______,          KC_VOLU, KC_VOLD, KC_MUTE, _______, _______,
+        _______, _______, _______, KC_BTN1, KC_BTN2,          _______,           _______,          KC_VOLU, KC_VOLD, KC_MUTE, _______, _______,
                                             _______, _______, _______,           _______, _______, _______
     ),
 };
+
+uint8_t PROGMEM game_mask[DRIVER_LED_TOTAL] = {
+    0,0,0,0,0,
+    0,0,2,0,0,
+    0,2,2,0,0,
+    0,0,2,0,0,
+    0,0,0,0,0,
+    0,0,0,0,
+    0,0,0,
+
+    0,0,0,
+    0,
+
+    0,0,0,0,0,
+    0,0,0,0,0,
+    0,0,0,0,0,
+    0,0,0,0,0,
+    0,0,0,0,0,
+    0,0,0,0,
+    0,0,0,
+
+    0,0,0,
+    0,
+};
+
+
+uint8_t PROGMEM game_arrow_mask[DRIVER_LED_TOTAL] = {
+    0,0,0,0,0,
+    0,0,4,0,0,
+    0,4,4,0,0,
+    0,0,4,0,0,
+    0,0,0,0,0,
+    0,0,0,0,
+    0,0,0,
+
+    0,0,0,
+    0,
+
+    0,0,0,0,0,
+    0,0,0,0,0,
+    0,0,0,0,0,
+    0,0,0,0,0,
+    0,0,0,0,0,
+    0,0,0,0,
+    0,0,0,
+
+    0,0,0,
+    0,
+};
 // clang-format on
+
+uint8_t* rgb_matrix_mask_kb(uint8_t default_layer, uint8_t current_layer) {
+    uint8_t* mask = 0;
+    switch (default_layer) {
+        case _GAME:
+            mask = game_mask;
+            break;
+        case _GAME_ARROW:
+            mask = game_arrow_mask;
+            break;
+    }
+    // switch (current_layer) {
+    //     case _NUMPAD:
+    //         mask = numpad_mask;
+    //         break;
+    //     case _MOUSE:
+    //         mask = mouse_mask;
+    //         break;
+    // }
+    return mask;
+}
 
 bool process_record_keyboard(uint16_t keycode, keyrecord_t* record) {
     switch (keycode) {
@@ -85,6 +155,32 @@ bool process_record_keyboard(uint16_t keycode, keyrecord_t* record) {
     return true;
 }
 
+layer_state_t layer_state_set_keyboard(layer_state_t state) {
+    switch (state) {
+        case _LOWER:
+            ML_LED_1(false);
+            ML_LED_2(true);
+            ML_LED_3(false);
+            break;
+        case _RAISE:
+            ML_LED_1(false);
+            ML_LED_2(false);
+            ML_LED_3(true);
+            break;
+        case _ADJUST:
+            ML_LED_1(false);
+            ML_LED_2(true);
+            ML_LED_3(true);
+            break;
+        default:
+            ML_LED_1(true);
+            ML_LED_2(false);
+            ML_LED_3(false);
+            break;
+    }
+    return state;
+}
+
 bool led_update_user(led_t led_state) {
     if (layer_state_is(_LOWER)) {
         ML_LED_1(false);
@@ -93,6 +189,10 @@ bool led_update_user(led_t led_state) {
     } else if (layer_state_is(_RAISE)) {
         ML_LED_1(false);
         ML_LED_2(false);
+        ML_LED_3(true);
+    } else if (layer_state_is(_ADJUST)) {
+        ML_LED_1(false);
+        ML_LED_2(true);
         ML_LED_3(true);
     } else {
         ML_LED_1(true);
