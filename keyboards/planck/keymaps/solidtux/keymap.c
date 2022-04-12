@@ -53,13 +53,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     QWERTY,  EMOJI1,  EMOJI2,  EMOJI3,  EMOJI4,  _______, _______, KC_KP_7, KC_KP_8, KC_KP_9, KC_PPLS, _______,
     GAME,    EMOJI5,  EMOJI6,  EMOJI7,  EMOJI8,  _______, _______, KC_KP_4, KC_KP_5, KC_KP_6, KC_PMNS, KC_NUMLOCK,
     GAMEARR, _______, _______, _______, _______, _______, _______, KC_KP_1, KC_KP_2, KC_KP_3, KC_PAST, _______,
-    _______, _______, _______, _______, MOUSE,   _______, _______, KC_KP_0, KC_PDOT, KC_PEQL, KC_PSLS, _______
-),
-[_MOUSE] = LAYOUT_planck_grid(
-    _______, _______, _______, _______, _______, _______, _______, _______, KC_ACL0, KC_ACL1, KC_ACL2, _______,
-    _______, _______, _______, _______, _______, _______, _______, _______, KC_WH_L, KC_WH_D, KC_WH_U, KC_WH_R,
-    _______, _______, _______, _______, _______, _______, _______, _______, KC_BTN1, KC_BTN2, KC_BTN3, KC_BTN4,
-    _______, _______, _______, _______, _______, _______, _______, _______, KC_MS_L, KC_MS_D, KC_MS_U, KC_MS_R
+    _______, _______, _______, _______, _______,  _______, _______, KC_KP_0, KC_PDOT, KC_PEQL, KC_PSLS, _______
 ),
 [_GAME] = LAYOUT_planck_grid(
     KC_TAB,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_BSPC,
@@ -95,14 +89,12 @@ uint8_t PROGMEM game_arrow_mask[47] = {
     0,0,0,0,0,0,0,0,0,0,0,0,
     0,0,0,0,0,0,  0,0,0,0,0
 };
-
-uint8_t PROGMEM mouse_mask[47] = {
-    0,0,0,0,0,0,0,0,2,2,2,0,
-    0,0,0,0,0,0,0,0,2,2,2,2,
-    0,0,0,0,0,0,0,0,2,2,2,2,
-    0,0,0,0,0,0,  0,2,2,2,2
-};
 // clang-format on
+
+layer_state_t layer_state_set_keyboard(layer_state_t state) {
+    state = update_tri_layer_state(state, _LOWER, _RAISE, _ADJUST);
+    return state;
+}
 
 uint8_t* rgb_matrix_mask_kb(uint8_t default_layer, uint8_t current_layer) {
     uint8_t* mask = 0;
@@ -117,9 +109,6 @@ uint8_t* rgb_matrix_mask_kb(uint8_t default_layer, uint8_t current_layer) {
     switch (current_layer) {
         case _NUMPAD:
             mask = numpad_mask;
-            break;
-        case _MOUSE:
-            mask = mouse_mask;
             break;
     }
     return mask;

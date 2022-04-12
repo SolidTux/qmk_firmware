@@ -26,7 +26,6 @@ __attribute__((weak)) layer_state_t layer_state_set_keyboard(layer_state_t state
 
 layer_state_t layer_state_set_user(layer_state_t state) {
     state         = layer_state_set_keyboard(state);
-    state         = update_tri_layer_state(state, _LOWER, _RAISE, _ADJUST);
     uint8_t layer = biton32(state);
     current_layer = layer;
     last_layer    = layer;
