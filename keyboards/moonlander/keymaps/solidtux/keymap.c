@@ -155,7 +155,7 @@ uint8_t PROGMEM lower_mask[DRIVER_LED_TOTAL] = {
     0
 };
 
-uint8_t PROGMEM raise_mask[DRIVER_LED_TOTAL] = {
+uint8_t PROGMEM numpad_mask[DRIVER_LED_TOTAL] = {
     0,0,0,0,0,
     0,0,0,0,0,
     0,0,0,0,0,
@@ -221,8 +221,8 @@ uint8_t* rgb_matrix_mask_kb(uint8_t default_layer, uint8_t current_layer) {
         case _LOWER:
             mask = lower_mask;
             break;
-        case _RAISE:
-            mask = raise_mask;
+        case _NUMPAD:
+            mask = numpad_mask;
             break;
     }
     return mask;
@@ -288,4 +288,8 @@ bool led_update_user(led_t led_state) {
     ML_LED_4(led_state.caps_lock);
     ML_LED_5(led_state.num_lock);
     return true;
+}
+
+uint8_t canvas_pos(uint8_t x, uint8_t y) {
+    return 0;
 }

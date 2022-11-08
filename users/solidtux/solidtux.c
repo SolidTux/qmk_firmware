@@ -1,15 +1,16 @@
 #include QMK_KEYBOARD_H
 #include "solidtux.h"
+#include "virtser.h"
 
-typedef enum { CMD_NOP, CMD_RGB_MODE, CMD_COLOR, CMD_PIXEL, CMD_RGB_SAVE, CMD_RGB_RESTORE, CMD_PROGRESS, CMD_LAST } cmd_t;
+typedef enum { CMD_NOP, CMD_RGB_MODE, CMD_COLOR, CMD_PIXEL, CMD_RGB_SAVE, CMD_RGB_RESTORE, CMD_PROGRESS, CMD_SIZE, CMD_LED, CMD_LAST } cmd_t;
 
 bool    progress_enable[4] = {false, false, false, false};
 uint8_t progress[4]        = {0, 0, 0, 0};
 RGB     progress_color[4]  = {
-    {255, 255, 255},
-    {255, 255, 255},
-    {255, 255, 255},
-    {255, 255, 255},
+         {255, 255, 255},
+         {255, 255, 255},
+         {255, 255, 255},
+         {255, 255, 255},
 };
 
 __attribute__((weak)) uint8_t* rgb_matrix_mask_kb(uint8_t default_layer, uint8_t current_layer) {
@@ -175,16 +176,24 @@ bool process_record_user(uint16_t keycode, keyrecord_t* record) {
     return true;
 }
 
-uint8_t ser_buffer[256];
-uint8_t ser_counter = 0;
-uint8_t ser_length  = 0;
-uint8_t ser_mode    = 10;
+uint8_t ser_buffer[128];
+uint8_t ser_buffer_out[128];
+uint8_t ser_counter     = 0;
+uint8_t ser_counter_out = 0;
+uint8_t ser_length      = 0;
+uint8_t ser_mode        = 10;
+
+const uint8_t PROGMEM canvas_map[CANVAS_H][CANVAS_W] = CANVAS_MAP;
 
 void virtser_recv(uint8_t c) {
     if (ser_counter == 0) {
         ser_length = c;
     } else {
         ser_buffer[ser_counter - 1] = c;
+    }
+    if (ser_counter_out > 0) {
+        ser_counter_out -= 1;
+        virtser_send(ser_buffer_out[ser_counter_out]);
     }
     if (ser_counter == ser_length && ser_counter > 0) {
         cmd_t cmd = (cmd_t)ser_buffer[0];
@@ -198,7 +207,10 @@ void virtser_recv(uint8_t c) {
                 break;
             case CMD_PIXEL:
                 rgb_matrix_config.mode = RGB_MATRIX_EFFECT_MAX;
-                rgb_matrix_set_color(ser_buffer[1], ser_buffer[2], ser_buffer[3], ser_buffer[4]);
+                uint8_t x              = ser_buffer[1];
+                uint8_t y              = ser_buffer[2];
+                uint8_t ind            = canvas_map[y][x];
+                rgb_matrix_set_color(ind, ser_buffer[3], ser_buffer[4], ser_buffer[5]);
                 break;
             case CMD_RGB_SAVE:
                 ser_mode = rgb_matrix_config.mode;
@@ -212,6 +224,14 @@ void virtser_recv(uint8_t c) {
                 progress_color[ser_buffer[1]].r = ser_buffer[4];
                 progress_color[ser_buffer[1]].g = ser_buffer[5];
                 progress_color[ser_buffer[1]].b = ser_buffer[6];
+                break;
+            case CMD_SIZE:
+                ser_buffer_out[0] = CANVAS_W;
+                ser_buffer_out[1] = CANVAS_H;
+                ser_counter_out   = 2;
+                break;
+            case CMD_LED:
+                rgb_matrix_set_color(ser_buffer[1], ser_buffer[2], ser_buffer[3], ser_buffer[4]);
                 break;
             default:
                 break;
