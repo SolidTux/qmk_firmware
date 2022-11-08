@@ -12,6 +12,7 @@ RGB     progress_color[4]  = {
          {255, 255, 255},
          {255, 255, 255},
 };
+const uint8_t PROGMEM canvas_map[CANVAS_H][CANVAS_W] = CANVAS_MAP;
 
 __attribute__((weak)) uint8_t* rgb_matrix_mask_kb(uint8_t default_layer, uint8_t current_layer) {
     return 0;
@@ -62,24 +63,25 @@ void rgb_matrix_indicators_user(void) {
     if (!cont) {
         return;
     }
-    for (uint8_t i = 0; i < DRIVER_LED_TOTAL; i++) {
-        uint8_t x = i % MATRIX_COLS;
-        uint8_t y = i / MATRIX_COLS;
-        if (y == 3 && x > 4) {
-            x++;
+    for (uint8_t x = 0; x < CANVAS_W; x++) {
+        for (uint8_t y = 0; y < 4; y++) {
+            uint8_t i = canvas_map[y][x];
+            if (progress_enable[y]) {
+                if (progress[y] > x) {
+                    rgb_matrix_set_color(i, progress_color[y].r, progress_color[y].g, progress_color[y].b);
+                } else {
+                    rgb_matrix_set_color(i, 0, 0, 0);
+                }
+            }
         }
+    }
+    for (uint8_t i = 0; i < DRIVER_LED_TOTAL; i++) {
         if (mask != 0) {
             if (mask[i] > 0) {
                 HSV hsv = rgb_matrix_config.hsv;
                 hsv.h += (255 * mask[i]) / 8;
                 RGB rgb = hsv_to_rgb(hsv);
                 rgb_matrix_set_color(i, rgb.r, rgb.g, rgb.b);
-            }
-        } else if (progress_enable[y]) {
-            if (progress[y] > x) {
-                rgb_matrix_set_color(i, progress_color[y].r, progress_color[y].g, progress_color[y].b);
-            } else {
-                rgb_matrix_set_color(i, 0, 0, 0);
             }
         }
     }
@@ -182,8 +184,6 @@ uint8_t ser_counter     = 0;
 uint8_t ser_counter_out = 0;
 uint8_t ser_length      = 0;
 uint8_t ser_mode        = 10;
-
-const uint8_t PROGMEM canvas_map[CANVAS_H][CANVAS_W] = CANVAS_MAP;
 
 void virtser_recv(uint8_t c) {
     if (ser_counter == 0) {
