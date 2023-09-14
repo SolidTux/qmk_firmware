@@ -186,58 +186,58 @@ uint8_t ser_length      = 0;
 uint8_t ser_mode        = 10;
 
 void virtser_recv(uint8_t c) {
-    if (ser_counter == 0) {
-        ser_length = c;
-    } else {
-        ser_buffer[ser_counter - 1] = c;
-    }
-    if (ser_counter_out > 0) {
-        ser_counter_out -= 1;
-        virtser_send(ser_buffer_out[ser_counter_out]);
-    }
-    if (ser_counter == ser_length && ser_counter > 0) {
-        cmd_t cmd = (cmd_t)ser_buffer[0];
-        switch (cmd) {
-            case CMD_RGB_MODE:
-                rgb_matrix_config.mode = ser_buffer[1];
-                break;
-            case CMD_COLOR:
-                rgb_matrix_config.mode = RGB_MATRIX_EFFECT_MAX;
-                rgb_matrix_set_color_all(ser_buffer[1], ser_buffer[2], ser_buffer[3]);
-                break;
-            case CMD_PIXEL:
-                rgb_matrix_config.mode = RGB_MATRIX_EFFECT_MAX;
-                uint8_t x              = ser_buffer[1];
-                uint8_t y              = ser_buffer[2];
-                uint8_t ind            = canvas_map[y][x];
-                rgb_matrix_set_color(ind, ser_buffer[3], ser_buffer[4], ser_buffer[5]);
-                break;
-            case CMD_RGB_SAVE:
-                ser_mode = rgb_matrix_config.mode;
-                break;
-            case CMD_RGB_RESTORE:
-                rgb_matrix_config.mode = ser_mode;
-                break;
-            case CMD_PROGRESS:
-                progress_enable[ser_buffer[1]]  = ser_buffer[2];
-                progress[ser_buffer[1]]         = ser_buffer[3];
-                progress_color[ser_buffer[1]].r = ser_buffer[4];
-                progress_color[ser_buffer[1]].g = ser_buffer[5];
-                progress_color[ser_buffer[1]].b = ser_buffer[6];
-                break;
-            case CMD_SIZE:
-                ser_buffer_out[0] = CANVAS_W;
-                ser_buffer_out[1] = CANVAS_H;
-                ser_counter_out   = 2;
-                break;
-            case CMD_LED:
-                rgb_matrix_set_color(ser_buffer[1], ser_buffer[2], ser_buffer[3], ser_buffer[4]);
-                break;
-            default:
-                break;
-        }
-        ser_counter = 0;
-    } else {
-        ser_counter++;
-    }
+    // if (ser_counter == 0) {
+    //     ser_length = c;
+    // } else {
+    //     ser_buffer[ser_counter - 1] = c;
+    // }
+    // if (ser_counter_out > 0) {
+    //     ser_counter_out -= 1;
+    //     virtser_send(ser_buffer_out[ser_counter_out]);
+    // }
+    // if (ser_counter == ser_length && ser_counter > 0) {
+    //     cmd_t cmd = (cmd_t)ser_buffer[0];
+    //     switch (cmd) {
+    //         case CMD_RGB_MODE:
+    //             rgb_matrix_config.mode = ser_buffer[1];
+    //             break;
+    //         case CMD_COLOR:
+    //             rgb_matrix_config.mode = RGB_MATRIX_EFFECT_MAX;
+    //             rgb_matrix_set_color_all(ser_buffer[1], ser_buffer[2], ser_buffer[3]);
+    //             break;
+    //         case CMD_PIXEL:
+    //             rgb_matrix_config.mode = RGB_MATRIX_EFFECT_MAX;
+    //             uint8_t x              = ser_buffer[1];
+    //             uint8_t y              = ser_buffer[2];
+    //             uint8_t ind            = canvas_map[y][x];
+    //             rgb_matrix_set_color(ind, ser_buffer[3], ser_buffer[4], ser_buffer[5]);
+    //             break;
+    //         case CMD_RGB_SAVE:
+    //             ser_mode = rgb_matrix_config.mode;
+    //             break;
+    //         case CMD_RGB_RESTORE:
+    //             rgb_matrix_config.mode = ser_mode;
+    //             break;
+    //         case CMD_PROGRESS:
+    //             progress_enable[ser_buffer[1]]  = ser_buffer[2];
+    //             progress[ser_buffer[1]]         = ser_buffer[3];
+    //             progress_color[ser_buffer[1]].r = ser_buffer[4];
+    //             progress_color[ser_buffer[1]].g = ser_buffer[5];
+    //             progress_color[ser_buffer[1]].b = ser_buffer[6];
+    //             break;
+    //         case CMD_SIZE:
+    //             ser_buffer_out[0] = CANVAS_W;
+    //             ser_buffer_out[1] = CANVAS_H;
+    //             ser_counter_out   = 2;
+    //             break;
+    //         case CMD_LED:
+    //             rgb_matrix_set_color(ser_buffer[1], ser_buffer[2], ser_buffer[3], ser_buffer[4]);
+    //             break;
+    //         default:
+    //             break;
+    //     }
+    //     ser_counter = 0;
+    // } else {
+    //     ser_counter++;
+    // }
 }
