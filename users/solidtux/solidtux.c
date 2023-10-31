@@ -7,10 +7,10 @@ typedef enum { CMD_NOP, CMD_RGB_MODE, CMD_COLOR, CMD_PIXEL, CMD_RGB_SAVE, CMD_RG
 bool    progress_enable[4] = {false, false, false, false};
 uint8_t progress[4]        = {0, 0, 0, 0};
 RGB     progress_color[4]  = {
-         {255, 255, 255},
-         {255, 255, 255},
-         {255, 255, 255},
-         {255, 255, 255},
+    {255, 255, 255},
+    {255, 255, 255},
+    {255, 255, 255},
+    {255, 255, 255},
 };
 const uint8_t PROGMEM canvas_map[CANVAS_H][CANVAS_W] = CANVAS_MAP;
 
