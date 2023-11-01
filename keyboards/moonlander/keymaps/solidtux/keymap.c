@@ -39,7 +39,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_GAME] = LAYOUT_moonlander(
         KC_GRV,  KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    LOWER,             LOWER,   KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_MINS,
         KC_TAB,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    RAISE,             RAISE,   KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_EQL,
-        ESC,     KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    NUMPAD,            GAMEARR, KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,
+        KC_ESC,  KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    NUMPAD,            GAMEARR, KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,
         KC_LSFT, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,                                KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, KC_RSFT,
         KC_LCTL, KC_LGUI, KC_LALT, KC_LEFT, KC_RGHT,          KC_RALT,           ESCCTL,           KC_UP,   KC_DOWN, KC_LBRC, KC_RBRC, KC_BSLS,
                                             KC_SPACE,KC_BSPC, KC_DEL,            SHTAB,   KC_TAB,  KC_ENT
@@ -48,7 +48,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_GAME_ARROW] = LAYOUT_moonlander(
         KC_GRV,  KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    LOWER,             LOWER,   KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_MINS,
         KC_TAB,  KC_Q,    KC_UP,   KC_E,    KC_R,    KC_T,    RAISE,             RAISE,   KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_EQL,
-        ESC,     KC_LEFT, KC_DOWN, KC_RIGHT,KC_F,    KC_G,    NUMPAD,            QWERTY,  KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,
+        KC_ESC,  KC_LEFT, KC_DOWN, KC_RIGHT,KC_F,    KC_G,    NUMPAD,            QWERTY,  KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,
         KC_LSFT, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,                                KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, KC_RSFT,
         KC_LCTL, KC_LGUI, KC_LALT, KC_LEFT, KC_RGHT,          KC_RALT,           ESCCTL,           KC_UP,   KC_DOWN, KC_LBRC, KC_RBRC, KC_BSLS,
                                             KC_SPACE,KC_BSPC, KC_DEL,            SHTAB,   KC_TAB,  KC_ENT
@@ -68,7 +68,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         _______, SF(11),  SF(12),  SF(13),  SF(14),  SF(15),  _______,           _______, SF(16),  SF(17),  SF(18),  SF(19),  SF(20),  SF(21),
         _______, _______, _______, _______, _______, _______, _______,           _______, _______, _______, _______, _______, _______, _______,
         _______, _______, _______, _______, _______, _______,                             _______, _______, _______, _______, _______, _______,
-        _______, _______, _______, _______, _______,          RESET,             EEP_RST,          _______, _______, _______, _______, _______,
+        _______, _______, _______, RGB_VAD, RGB_VAI,          QK_BOOT,           EE_CLR,           RGB_HUI, RGB_HUD, _______, _______, _______,
                                             KC_MUTE, KC_MAIL, _______,           _______, _______, _______
     ),
 
@@ -82,7 +82,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ),
 };
 
-uint8_t PROGMEM game_mask[DRIVER_LED_TOTAL] = {
+uint8_t PROGMEM game_mask[RGB_MATRIX_LED_COUNT] = {
     0,0,0,0,0,
     0,0,2,0,0,
     0,2,2,0,0,
@@ -107,7 +107,7 @@ uint8_t PROGMEM game_mask[DRIVER_LED_TOTAL] = {
 };
 
 
-uint8_t PROGMEM game_arrow_mask[DRIVER_LED_TOTAL] = {
+uint8_t PROGMEM game_arrow_mask[RGB_MATRIX_LED_COUNT] = {
     0,0,0,0,0,
     0,0,4,0,0,
     0,4,4,0,0,
@@ -131,7 +131,7 @@ uint8_t PROGMEM game_arrow_mask[DRIVER_LED_TOTAL] = {
     0
 };
 
-uint8_t PROGMEM lower_mask[DRIVER_LED_TOTAL] = {
+uint8_t PROGMEM lower_mask[RGB_MATRIX_LED_COUNT] = {
     0,0,0,0,0,
     0,0,5,5,0,
     0,0,5,5,0,
@@ -155,7 +155,7 @@ uint8_t PROGMEM lower_mask[DRIVER_LED_TOTAL] = {
     0
 };
 
-uint8_t PROGMEM numpad_mask[DRIVER_LED_TOTAL] = {
+uint8_t PROGMEM numpad_mask[RGB_MATRIX_LED_COUNT] = {
     0,0,0,0,0,
     0,0,0,0,0,
     0,0,0,0,0,
@@ -179,7 +179,7 @@ uint8_t PROGMEM numpad_mask[DRIVER_LED_TOTAL] = {
     0
 };
 
-uint8_t PROGMEM adjust_mask[DRIVER_LED_TOTAL] = {
+uint8_t PROGMEM adjust_mask[RGB_MATRIX_LED_COUNT] = {
     3,0,0,0,0,
     0,0,0,0,0,
     0,0,0,0,0,

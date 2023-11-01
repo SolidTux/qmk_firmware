@@ -3,7 +3,7 @@ RGB_MATRIX_EFFECT(image)
 #ifdef RGB_MATRIX_CUSTOM_EFFECT_IMPLS
 
 // clang-format off
-bool PROGMEM image_mask[DRIVER_LED_TOTAL] = {
+bool PROGMEM image_mask[RGB_MATRIX_LED_COUNT] = {
     0,0,0,0,0,
     1,0,0,0,1,
     1,1,1,1,1,
@@ -30,8 +30,8 @@ bool PROGMEM image_mask[DRIVER_LED_TOTAL] = {
 
 static bool image(effect_params_t* params) {
     RGB_MATRIX_USE_LIMITS(led_min, led_max);
-    if (led_max > DRIVER_LED_TOTAL) {
-        led_max = DRIVER_LED_TOTAL;
+    if (led_max > RGB_MATRIX_LED_COUNT) {
+        led_max = RGB_MATRIX_LED_COUNT;
     }
     for (uint8_t i = led_min; i < led_max; i++) {
         if (image_mask[i]) {
@@ -40,7 +40,7 @@ static bool image(effect_params_t* params) {
             rgb_matrix_set_color(i, 0x00, 0x00, 0x00);
         }
     }
-    return led_max < DRIVER_LED_TOTAL;
+    return led_max < RGB_MATRIX_LED_COUNT;
 }
 
 #endif

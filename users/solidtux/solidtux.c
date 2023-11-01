@@ -45,15 +45,15 @@ layer_state_t default_layer_state_set_user(layer_state_t state) {
             rgb_matrix_config.mode = RGB_MATRIX_SPLASH;
             break;
         case _QWERTY:
-            rgb_matrix_config.mode = RGB_MATRIX_STARTUP_MODE;
+            rgb_matrix_config.mode = RGB_MATRIX_DEFAULT_MODE;
             break;
     }
     return state;
 }
 
-void rgb_matrix_indicators_user(void) {
+bool rgb_matrix_indicators_user(void) {
     if (rgb_matrix_config.mode == RGB_MATRIX_EFFECT_MAX) {
-        return;
+        return false;
     }
     uint8_t* mask = rgb_matrix_mask_kb(default_layer, current_layer);
     bool     cont = mask != 0;
@@ -61,7 +61,7 @@ void rgb_matrix_indicators_user(void) {
         cont = cont || progress_enable[i];
     }
     if (!cont) {
-        return;
+        return false;
     }
     for (uint8_t x = 0; x < CANVAS_W; x++) {
         for (uint8_t y = 0; y < 4; y++) {
@@ -75,7 +75,7 @@ void rgb_matrix_indicators_user(void) {
             }
         }
     }
-    for (uint8_t i = 0; i < DRIVER_LED_TOTAL; i++) {
+    for (uint8_t i = 0; i < RGB_MATRIX_LED_COUNT; i++) {
         if (mask != 0) {
             if (mask[i] > 0) {
                 HSV hsv = rgb_matrix_config.hsv;
@@ -85,6 +85,7 @@ void rgb_matrix_indicators_user(void) {
             }
         }
     }
+    return true;
 }
 
 __attribute__((weak)) bool process_record_keyboard(uint16_t keycode, keyrecord_t* record) {

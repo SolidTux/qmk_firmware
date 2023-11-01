@@ -23,7 +23,7 @@ static bool image(effect_params_t* params) {
             rgb_matrix_set_color(i, 0x00, 0x00, 0x00);
         }
     }
-    return led_max < DRIVER_LED_TOTAL;
+    return led_max < RGB_MATRIX_LED_COUNT;
 }
 
 #endif
