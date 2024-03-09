@@ -24,8 +24,8 @@ enum keycodes {
     HALF_SP,
 };
 
-#define LOWER TT(_LOWER)
-#define RAISE TT(_RAISE)
+#define LOWER MO(_LOWER)
+#define RAISE MO(_RAISE)
 #define NUMPAD TT(_NUMPAD)
 #define GAME DF(_GAME)
 #define GAMEARR DF(_GAME_ARROW)
