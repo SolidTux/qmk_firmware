@@ -3,7 +3,7 @@
 
 #include "quantum.h"
 
-enum layers { _QWERTY, _GAME, _GAME_ARROW, _LOWER, _RAISE, _ADJUST, _NUMPAD };
+enum layers { _QWERTY, _GAME, _GAME_ARROW, _GAME_BOTH, _LOWER, _RAISE, _ADJUST, _NUMPAD };
 
 enum keycodes {
     QWERTY = SAFE_RANGE,
@@ -29,6 +29,7 @@ enum keycodes {
 #define NUMPAD TT(_NUMPAD)
 #define GAME DF(_GAME)
 #define GAMEARR DF(_GAME_ARROW)
+#define GAMEBTH DF(_GAME_BOTH)
 #define QWERTY DF(_QWERTY)
 
 #endif

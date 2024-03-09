@@ -44,6 +44,9 @@ layer_state_t default_layer_state_set_user(layer_state_t state) {
         case _GAME_ARROW:
             rgb_matrix_config.mode = RGB_MATRIX_SPLASH;
             break;
+        case _GAME_BOTH:
+            rgb_matrix_config.mode = RGB_MATRIX_SPLASH;
+            break;
         case _QWERTY:
             rgb_matrix_config.mode = RGB_MATRIX_DEFAULT_MODE;
             break;
