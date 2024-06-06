@@ -20,7 +20,7 @@
 #include <print.h>
 
 #define ESCAPE MT(MOD_RALT, KC_ESC)
-#define LSHIFT MT(KC_LSFT, KC_BSLS)
+#define LSHIFT MT(MOD_LSFT, KC_BSLS)
 #define RSHIFT MT(MOD_RSFT, KC_ENT)
 
 // clang-format off
