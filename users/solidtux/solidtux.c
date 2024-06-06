@@ -3,7 +3,7 @@
 #include "virtser.h"
 #include "raw_hid.h"
 
-typedef enum { CMD_NOP, CMD_RGB_MODE, CMD_COLOR, CMD_PIXEL, CMD_RGB_SAVE, CMD_RGB_RESTORE, CMD_PROGRESS, CMD_SIZE, CMD_LED, CMD_LAST } cmd_t;
+typedef enum { CMD_NOP, CMD_RGB_MODE, CMD_COLOR, CMD_PIXEL, CMD_RGB_SAVE, CMD_RGB_RESTORE, CMD_PROGRESS, CMD_SIZE, CMD_LED, CMD_LAYER, CMD_LAST } cmd_t;
 
 bool    progress_enable[4] = {false, false, false, false};
 uint8_t progress[4]        = {0, 0, 0, 0};
@@ -225,6 +225,9 @@ void raw_hid_receive(uint8_t* data, uint8_t length) {
             break;
         case CMD_LED:
             rgb_matrix_set_color(data[1], data[2], data[3], data[4]);
+            break;
+        case CMD_LAYER:
+            default_layer_set(data[1]);
             break;
         default:
             break;
