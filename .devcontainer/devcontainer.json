@@ -1,0 +1,21 @@
+{
+    "build": {
+        "dockerfile": "Dockerfile"
+    },
+    "mounts": [
+        "type=bind,source=/home/daniel/.config/qmk,target=/root/.config/qmk"
+    ],
+    "privileged": true,
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "charliermarsh.ruff",
+                "EditorConfig.EditorConfig",
+                "xaver.clang-format",
+                "llvm-vs-code-extensions.vscode-clangd",
+                "bierner.github-markdown-preview",
+                "donjayamanne.git-extension-pack"
+            ]
+        }
+    }
+}

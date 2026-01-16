@@ -32,7 +32,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_TAB,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    RAISE,             RAISE,   KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_EQL,
         ESCALT,  KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    NUMPAD,            GAME,    KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,
         KC_LSFT, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,                                KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, KC_RSFT,
-        KC_LCTL, KC_LGUI, KC_LALT, KC_LEFT, KC_RGHT,          KC_RALT,           KC_F20,           KC_UP,   KC_DOWN, KC_LBRC, KC_RBRC, KC_BSLS,
+        KC_LCTL, KC_LGUI, KC_LALT, KC_LEFT, KC_RGHT,          KC_F21,            KC_F20,           KC_UP,   KC_DOWN, KC_LBRC, KC_RBRC, KC_BSLS,
                                             KC_SPACE,KC_BSPC, KC_DEL,            KC_TAB,  KC_DEL,  KC_ENT
     ),
 
@@ -41,7 +41,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_TAB,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    RAISE,             RAISE,   KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_EQL,
         KC_ESC,  KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    NUMPAD,            GAMEARR, KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,
         KC_LSFT, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,                                KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, KC_RSFT,
-        KC_LCTL, KC_LGUI, KC_LALT, KC_LEFT, KC_RGHT,          KC_RALT,           KC_F20,           KC_UP,   KC_DOWN, KC_LBRC, KC_RBRC, KC_BSLS,
+        KC_LCTL, KC_LGUI, KC_LALT, KC_LEFT, KC_RGHT,          KC_F21,            KC_F20,           KC_UP,   KC_DOWN, KC_LBRC, KC_RBRC, KC_BSLS,
                                             KC_SPACE,KC_BSPC, KC_DEL,            SHTAB,   KC_TAB,  KC_ENT
     ),
 
@@ -50,7 +50,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_TAB,  KC_Q,    KC_UP,   KC_E,    KC_R,    KC_T,    RAISE,             RAISE,   KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_EQL,
         KC_ESC,  KC_LEFT, KC_DOWN, KC_RIGHT,KC_F,    KC_G,    NUMPAD,            GAMEBTH, KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,
         KC_LSFT, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,                                KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, KC_RSFT,
-        KC_LCTL, KC_LGUI, KC_LALT, KC_LEFT, KC_RGHT,          KC_RALT,           KC_F20,           KC_UP,   KC_DOWN, KC_LBRC, KC_RBRC, KC_BSLS,
+        KC_LCTL, KC_LGUI, KC_LALT, KC_LEFT, KC_RGHT,          KC_F21,            KC_F20,           KC_UP,   KC_DOWN, KC_LBRC, KC_RBRC, KC_BSLS,
                                             KC_SPACE,KC_BSPC, KC_DEL,            SHTAB,   KC_TAB,  KC_ENT
     ),
 
@@ -59,7 +59,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_TAB,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    RAISE,             RAISE,   KC_Y,    KC_U,    KC_UP,   KC_O,    KC_P,    KC_EQL,
         KC_ESC,  KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    NUMPAD,            QWERTY,  KC_H,    KC_LEFT, KC_DOWN, KC_RGHT, KC_SCLN, KC_QUOT,
         KC_LSFT, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,                                KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, KC_RSFT,
-        KC_LCTL, KC_LGUI, KC_LALT, KC_LEFT, KC_RGHT,          KC_RALT,           KC_F20,           KC_UP,   KC_DOWN, KC_LBRC, KC_RBRC, KC_BSLS,
+        KC_LCTL, KC_LGUI, KC_LALT, KC_LEFT, KC_RGHT,          KC_F21,            KC_F20,           KC_UP,   KC_DOWN, KC_LBRC, KC_RBRC, KC_BSLS,
                                             KC_SPACE,KC_BSPC, KC_DEL,            SHTAB,   KC_TAB,  KC_ENT
     ),
 
@@ -68,16 +68,16 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         _______, KC_F11,  KC_F12,  KC_F13,  KC_F14,  KC_F15,  _______,           _______, KC_F16,  KC_F17,  KC_F18,  KC_F19,  KC_F20,  KC_F21,
         _______, EMOJI1,  EMOJI2,  EMOJI3,  EMOJI4,  _______, _______,           _______, _______, _______, _______, _______, _______, _______,
         _______, EMOJI5,  EMOJI6,  EMOJI7,  EMOJI8,  _______,                             _______, _______, _______, _______, _______, _______,
-        _______, _______, _______, KC_HOME, KC_END,           _______,           RGB_TOG,          KC_PGUP, KC_PGDN, _______, _______, _______,
-                                            IMAGE,   RGBANIM, RGB_RMOD,          RGB_MOD, COLOR,   HEATMAP
+        _______, _______, _______, KC_HOME, KC_END,           _______,           UG_TOGG,          KC_PGUP, KC_PGDN, _______, _______, _______,
+                                            IMAGE,   RGBANIM, UG_PREV,           UG_NEXT, COLOR,   HEATMAP
     ),
- 
+
     [_RAISE] = LAYOUT_moonlander(
         _______, SF(1),   SF(2),   SF(3),   SF(4),   SF(5),   _______,           _______, SF(6),   SF(7),   SF(8),   SF(9),   SF(10),  SF(11),
         _______, SF(11),  SF(12),  SF(13),  SF(14),  SF(15),  _______,           _______, SF(16),  SF(17),  SF(18),  SF(19),  SF(20),  SF(21),
         _______, _______, _______, _______, _______, _______, _______,           _______, _______, _______, _______, _______, _______, _______,
         _______, _______, _______, _______, _______, _______,                             _______, _______, _______, _______, _______, _______,
-        _______, _______, _______, RGB_VAD, RGB_VAI,          QK_BOOT,           EE_CLR,           RGB_HUI, RGB_HUD, _______, _______, _______,
+        _______, _______, _______, RM_VALD, RM_VALU,          QK_BOOT,           EE_CLR,           RM_HUEU, RM_HUED, _______, _______, _______,
                                             KC_F20,  KC_MAIL, _______,           _______, _______, _______
     ),
 
